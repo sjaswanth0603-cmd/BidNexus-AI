@@ -15,6 +15,7 @@ import {
 import { Navbar } from '../../components/Navbar';
 import { Sidebar } from '../../components/Sidebar';
 import { AIAssistantDrawer } from '../../components/AIAssistantDrawer';
+import { GovtAdapterPanel } from '../../components/GovtAdapterPanel';
 import { useAuth } from '../../context/AuthContext';
 import { bidService } from '../../services/api';
 import type { Bid } from '../../types';
@@ -116,6 +117,9 @@ export const AdminDashboard: React.FC = () => {
               <span className="text-xs text-slate-500 font-normal">Immutable Audit Logs</span>
             </div>
           </div>
+
+          {/* Government Adapters Integration Status Panel */}
+          <GovtAdapterPanel />
 
           {/* Quick Action Navigation Grid */}
           <div className="space-y-3">
