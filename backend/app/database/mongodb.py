@@ -1,5 +1,5 @@
 import logging
-import ssl
+import certifi
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.config import settings
@@ -11,7 +11,7 @@ try:
     mongo_client = MongoClient(
         settings.MONGODB_URL,
         serverSelectionTimeoutMS=5000,
-        tlsAllowInvalidCertificates=True
+        tlsCAFile=certifi.where()
     )
     mongo_db = mongo_client[settings.MONGODB_DB_NAME]
 except Exception as e:
@@ -24,7 +24,7 @@ try:
     async_mongo_client = AsyncIOMotorClient(
         settings.MONGODB_URL,
         serverSelectionTimeoutMS=5000,
-        tlsAllowInvalidCertificates=True
+        tlsCAFile=certifi.where()
     )
     async_mongo_db = async_mongo_client[settings.MONGODB_DB_NAME]
 except Exception as e:
