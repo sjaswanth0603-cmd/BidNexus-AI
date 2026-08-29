@@ -52,14 +52,26 @@ def compare_vendors(
             if r.status == "NON_COMPLIANT" and r.requirement and r.requirement.mandatory:
                 mandatory_failures.append(r.requirement.requirement)
 
+        risk_lvl = "HIGH" if (len(mandatory_failures) > 0 or sub.compliance_score < 60) else ("MEDIUM" if sub.compliance_score < 85 else "LOW")
+        
+        if len(mandatory_failures) > 0 or vendor.is_blacklisted:
+            recommendation = "DISQUALIFIED (Mandatory Statutory Non-Compliance / Debarment)"
+        elif sub.compliance_score >= 85.0:
+            recommendation = "QUALIFIED (Recommended for Financial L1 Opening)"
+        else:
+            recommendation = "REQUIRES PROCUREMENT OFFICER REVIEW & OVERRIDE"
+
         matrix.append({
             "vendor_id": vendor.id,
             "company_name": vendor.company_name,
             "reg_number": vendor.reg_number,
             "compliance_score": sub.compliance_score,
+            "risk_level": risk_lvl,
+            "ai_recommendation": recommendation,
+            "is_blacklisted": vendor.is_blacklisted,
             "status": sub.status,
             "total_evaluated": len(results),
-            "compliant_count": sum(1 for r in results if r.status == "COMPLIANT"),
+            "compliant_count": sum(1 for r in results if r.status in ["COMPLIANT", "APPROVED"]),
             "review_required_count": sum(1 for r in results if r.status == "REVIEW_REQUIRED"),
             "non_compliant_count": sum(1 for r in results if r.status == "NON_COMPLIANT"),
             "mandatory_failures": mandatory_failures,
