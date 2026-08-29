@@ -104,6 +104,18 @@ export const vendorService = {
     });
     return res.data;
   },
+  getBlacklist: async () => {
+    const res = await api.get('/vendors/blacklist/all');
+    return res.data;
+  },
+  blacklistVendor: async (vendorId: string, reason: string) => {
+    const res = await api.post(`/vendors/${vendorId}/blacklist?reason=${encodeURIComponent(reason)}`);
+    return res.data;
+  },
+  removeFromBlacklist: async (vendorId: string) => {
+    const res = await api.delete(`/vendors/${vendorId}/blacklist`);
+    return res.data;
+  },
   getSubmissionDetail: async (submissionId: string) => {
     const res = await api.get(`/vendors/submissions/${submissionId}`);
     return res.data as Submission;

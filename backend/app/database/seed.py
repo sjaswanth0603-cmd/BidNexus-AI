@@ -1,12 +1,42 @@
 import logging
 from datetime import datetime
 from sqlalchemy.orm import Session
-from app.models.models import User, Bid, Requirement, Vendor, Submission, ComplianceResult, HumanReview, AuditLog
+from app.models.models import User, Bid, Requirement, Vendor, Submission, ComplianceResult, HumanReview, AuditLog, BlacklistRecord
 from app.auth.security import get_password_hash
 
 logger = logging.getLogger("seed")
 
 def seed_database(db: Session):
+    # Seed Blacklist records if not present
+    existing_blacklist = db.query(BlacklistRecord).first()
+    if not existing_blacklist:
+        b1 = BlacklistRecord(
+            company_name="InfraSys Technologies Pvt Ltd",
+            reg_number="REG-INFRASYS-9921",
+            gstin="37AAACI9921K1Z5",
+            reason="Submitted forged bank solvency & fake experience certificates in GeM procurement bid.",
+            debarment_agency="Central Vigilance Commission (CVC) / GeM Portal",
+            debarred_until="2028-12-31"
+        )
+        b2 = BlacklistRecord(
+            company_name="FakeVendor Corp / Non-Compliant Bidder",
+            reg_number="REG-[#0c2356]-0042".replace("[#0c2356]", "FAKE"),
+            gstin="37AAACF0042K1Z9",
+            reason="Failure to supply OEM MAF authorization letter and invalid GST registration.",
+            debarment_agency="Department of Expenditure, Ministry of Finance",
+            debarred_until="2027-06-30"
+        )
+        b3 = BlacklistRecord(
+            company_name="Blacklisted Infra Projects Pvt Ltd",
+            reg_number="REG-BLK-8812",
+            gstin="37AAACB8812K1Z1",
+            reason="Defaulted on government civil contract execution & blacklisted by AP Water Resources Dept.",
+            debarment_agency="Government of Andhra Pradesh (AP eGP Authority)",
+            debarred_until="2029-03-31"
+        )
+        db.add_all([b1, b2, b3])
+        db.commit()
+
     # Check if seed users already exist
     existing_user = db.query(User).filter(User.email == "user@example.com").first()
     if existing_user:

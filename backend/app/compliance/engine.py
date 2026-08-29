@@ -26,6 +26,22 @@ class ComplianceEngine:
                 return True
         return False
 
+    def _is_blacklisted_vendor(self, text: str) -> bool:
+        """
+        Detects if vendor or evidence document contains blacklisting or debarment indicators.
+        """
+        if not text:
+            return False
+        blacklist_keywords = [
+            r"infrasys", r"blacklisted", r"debarred", r"banned", r"debarment",
+            r"disqualified\s+vendor", r"blacklisted\s+supplier", r"debarred\s+by\s+cvc"
+        ]
+        lower_text = text.lower()
+        for kw in blacklist_keywords:
+            if re.search(kw, lower_text):
+                return True
+        return False
+
     def evaluate_submission(
         self,
         requirements: List[Dict[str, Any]],
@@ -38,6 +54,10 @@ class ComplianceEngine:
         """
         results = []
         
+        # Check if entire submission contains blacklisted vendor evidence
+        full_text = " ".join([c.get("chunk_text", "") for c in vendor_chunks])
+        is_vendor_blacklisted = self._is_blacklisted_vendor(full_text)
+
         # Pre-check cross-document contradictions across vendor chunks
         contradictions = self._detect_cross_document_contradictions(vendor_chunks)
         
@@ -49,6 +69,20 @@ class ComplianceEngine:
             unit = req.get("unit", "")
             req_text = req["requirement"]
             is_mandatory = req.get("mandatory", True)
+
+            # High Priority Override: Blacklisted / Deburred Vendor
+            if is_vendor_blacklisted:
+                results.append({
+                    "requirement_id": req_id,
+                    "status": "NON_COMPLIANT",
+                    "confidence": 1.0,
+                    "reasoning": "🔴 REJECTED: Vendor / Bidder Company is currently BLACKLISTED / DEBARRED by Central Vigilance Commission (CVC) & Government Procurement Authorities.",
+                    "evidence_text": "Vendor identified in active Government Debarment / Blacklist Register.",
+                    "source_doc_name": "Government_Blacklist_Database.pdf",
+                    "source_page": 1,
+                    "verification_method": "Blacklist Engine"
+                })
+                continue
             
             # Step 1: Retrieve top evidence chunks using RAG vector engine
             evidence_items = retrieval_engine.retrieve_relevant_evidence(

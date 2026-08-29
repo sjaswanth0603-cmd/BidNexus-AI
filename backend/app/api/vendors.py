@@ -32,19 +32,92 @@ def list_vendors(db: Session = Depends(get_db), current_user: User = Depends(get
     return db.query(Vendor).all()
 
 
-@router.get("/govt-adapters/status")
-def get_govt_adapter_status(current_user: User = Depends(get_current_user)):
-    return {
-        "mode": "Sandbox Mocker / Production Ready",
-        "adapters": [
-            { "name": "GSTN API Gateway", "code": "GSTN", "status": "VERIFIED", "latency_ms": 42, "endpoint": "https://api.gst.gov.in/v1.0/search", "verified_records": 19 },
-            { "name": "Udyam MSME Portal", "code": "UDYAM", "status": "VERIFIED", "latency_ms": 58, "endpoint": "https://udyamregistration.gov.in/api/verify", "verified_records": 17 },
-            { "name": "MCA21 Corporate Registry", "code": "MCA", "status": "VERIFIED", "latency_ms": 64, "endpoint": "https://mca.gov.in/mcafoportal/cinCheck", "verified_records": 19 },
-            { "name": "CPP Debarment & Blacklisting Portal", "code": "DEBARMENT", "status": "CLEAR", "latency_ms": 31, "endpoint": "https://eprocure.gov.in/cppp/debarment", "verified_records": 19 },
-            { "name": "EPFO / ESIC Compliance Gateway", "code": "EPFO", "status": "VERIFIED", "latency_ms": 78, "endpoint": "https://unifiedportal-epfo.gov.in/api", "verified_records": 15 },
-            { "name": "DigiLocker Verification Vault", "code": "DIGILOCKER", "status": "ACTIVE", "latency_ms": 25, "endpoint": "https://api.digilocker.gov.in/v1", "verified_records": 19 }
-        ]
-    }
+@router.get("/blacklist/all")
+def list_blacklisted_suppliers(db: Session = Depends(get_db)):
+    """
+    Returns list of all active debarred / blacklisted suppliers across GeM and Govt Procurement.
+    """
+    from app.models.models import BlacklistRecord
+    records = db.query(BlacklistRecord).all()
+    out = []
+    for r in records:
+        out.append({
+            "id": r.id,
+            "company_name": r.company_name,
+            "reg_number": r.reg_number,
+            "gstin": r.gstin,
+            "reason": r.reason,
+            "debarment_agency": r.debarment_agency,
+            "debarred_until": r.debarred_until,
+            "created_at": str(r.created_at) if r.created_at else None
+        })
+    return {"status": "success", "count": len(out), "blacklisted_suppliers": out}
+
+
+@router.post("/{vendor_id}/blacklist")
+def blacklist_vendor(vendor_id: str, reason: str = "Deburred for procurement non-compliance", db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """
+    Blacklist a vendor and trigger real-time MongoDB Atlas sync.
+    """
+    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor record not found.")
+
+    vendor.is_blacklisted = True
+    vendor.blacklist_reason = reason
+    vendor.blacklisted_by = current_user.email
+    db.commit()
+
+    audit = AuditLog(
+        user_id=current_user.id,
+        action="VENDOR_BLACKLISTED",
+        entity_type="Vendor",
+        entity_id=vendor.id,
+        details=f"Vendor '{vendor.company_name}' blacklisted by {current_user.email}. Reason: {reason}"
+    )
+    db.add(audit)
+    db.commit()
+
+    try:
+        from app.database.mongodb import sync_all_data_to_mongodb
+        sync_all_data_to_mongodb(db)
+    except Exception:
+        pass
+
+    return {"status": "success", "message": f"Vendor '{vendor.company_name}' has been blacklisted successfully."}
+
+
+@router.delete("/{vendor_id}/blacklist")
+def remove_vendor_from_blacklist(vendor_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """
+    Remove a vendor from the blacklist and sync to MongoDB Atlas.
+    """
+    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor record not found.")
+
+    vendor.is_blacklisted = False
+    vendor.blacklist_reason = None
+    vendor.blacklisted_by = None
+    db.commit()
+
+    audit = AuditLog(
+        user_id=current_user.id,
+        action="VENDOR_REMOVED_FROM_BLACKLIST",
+        entity_type="Vendor",
+        entity_id=vendor.id,
+        details=f"Vendor '{vendor.company_name}' removed from blacklist by {current_user.email}."
+    )
+    db.add(audit)
+    db.commit()
+
+    try:
+        from app.database.mongodb import sync_all_data_to_mongodb
+        sync_all_data_to_mongodb(db)
+    except Exception:
+        pass
+
+    return {"status": "success", "message": f"Vendor '{vendor.company_name}' has been removed from blacklist."}
 
 
 @router.get("/{vendor_id}", response_model=VendorOut)

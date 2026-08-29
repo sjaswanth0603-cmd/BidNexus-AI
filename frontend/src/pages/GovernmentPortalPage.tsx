@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   LogIn,
@@ -11,31 +11,34 @@ import {
   Building2,
   BarChart3,
   RefreshCw,
-  UserX
+  UserX,
+  ShieldAlert,
+  X
 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 import { useAuth } from '../context/AuthContext';
 import { Navbar } from '../components/Navbar';
+import { vendorService } from '../services/api';
 
-// Chart Data with Distinct Visual Colors per FY
+// Chart Data
 const chartDataCount = [
-  { year: '20-21', count: 50.4, fill: '#0D9488' }, // Teal
-  { year: '21-22', count: 69.8, fill: '#2563EB' }, // Royal Blue
-  { year: '22-23', count: 76.5, fill: '#7C3AED' }, // Deep Purple
-  { year: '23-24', count: 87.8, fill: '#15803D' }, // Forest Green
-  { year: '24-25', count: 44.9, fill: '#EA580C' }, // Vibrant Orange
-  { year: '25-26', count: 65.7, fill: '#059669' }, // Emerald Green
-  { year: '26-27', count: 28.2, fill: '#0284C7' }, // Sky Blue
+  { year: '20-21', count: 50.4, fill: '#0D9488' },
+  { year: '21-22', count: 69.8, fill: '#2563EB' },
+  { year: '22-23', count: 76.5, fill: '#7C3AED' },
+  { year: '23-24', count: 87.8, fill: '#15803D' },
+  { year: '24-25', count: 44.9, fill: '#EA580C' },
+  { year: '25-26', count: 65.7, fill: '#059669' },
+  { year: '26-27', count: 28.2, fill: '#0284C7' },
 ];
 
 const chartDataValue = [
-  { year: '20-21', count: 420.5, fill: '#0D9488' }, // Teal
-  { year: '21-22', count: 610.2, fill: '#2563EB' }, // Royal Blue
-  { year: '22-23', count: 780.8, fill: '#7C3AED' }, // Deep Purple
-  { year: '23-24', count: 950.4, fill: '#15803D' }, // Forest Green
-  { year: '24-25', count: 520.1, fill: '#EA580C' }, // Vibrant Orange
-  { year: '25-26', count: 830.6, fill: '#059669' }, // Emerald Green
-  { year: '26-27', count: 340.2, fill: '#0284C7' }, // Sky Blue
+  { year: '20-21', count: 420.5, fill: '#0D9488' },
+  { year: '21-22', count: 610.2, fill: '#2563EB' },
+  { year: '22-23', count: 780.8, fill: '#7C3AED' },
+  { year: '23-24', count: 950.4, fill: '#15803D' },
+  { year: '24-25', count: 520.1, fill: '#EA580C' },
+  { year: '25-26', count: 830.6, fill: '#059669' },
+  { year: '26-27', count: 340.2, fill: '#0284C7' },
 ];
 
 // AP eProcurement Tenders Dataset
@@ -95,12 +98,28 @@ const initialTenders = [
 export const GovernmentPortalPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'Current Tenders' | 'Corrigendums' | 'Upcoming Tenders'>('Current Tenders');
   const [chartMode, setChartMode] = useState<'Count' | 'Value'>('Count');
+  const [showBlacklistModal, setShowBlacklistModal] = useState<boolean>(false);
+  const [blacklistRecords, setBlacklistRecords] = useState<any[]>([]);
 
   const [loginEmail, setLoginEmail] = useState('user@example.com');
   const [loginPassword, setLoginPassword] = useState('••••••••••••');
 
   const { login, fastLogin } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchBlacklist = async () => {
+      try {
+        const data = await vendorService.getBlacklist();
+        if (data && data.blacklisted_suppliers) {
+          setBlacklistRecords(data.blacklisted_suppliers);
+        }
+      } catch (err) {
+        console.error('Failed to load blacklist:', err);
+      }
+    };
+    fetchBlacklist();
+  }, []);
 
   const handlePortalLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,7 +185,7 @@ export const GovernmentPortalPage: React.FC = () => {
               <li className="text-slate-300">|</li>
               <li><a href="#faqs" className="hover:text-slate-900">FAQs</a></li>
               <li className="text-slate-300">|</li>
-              <li><a href="#suggestions" className="hover:text-slate-900">Suggestions</a></li>
+              <li><button onClick={() => setShowBlacklistModal(true)} className="text-rose-600 font-bold hover:underline">Blocked Suppliers</button></li>
               <li className="text-slate-300">|</li>
               <li><a href="#support" className="hover:text-slate-900">Support Desk</a></li>
             </ul>
@@ -244,9 +263,17 @@ export const GovernmentPortalPage: React.FC = () => {
           </div>
 
           <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-2 text-xs font-medium text-slate-700">
-            <div className="flex items-center gap-2 py-2 border-b border-slate-100 hover:text-slate-900 cursor-pointer">
-              <UserX className="w-4 h-4 text-slate-400" />
-              <span>Blocked Suppliers</span>
+            <div
+              onClick={() => setShowBlacklistModal(true)}
+              className="flex items-center justify-between py-2 border-b border-slate-100 text-rose-600 font-bold hover:bg-rose-50 px-2 rounded-lg cursor-pointer transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <UserX className="w-4 h-4 text-rose-600" />
+                <span>Blocked Suppliers</span>
+              </div>
+              <span className="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">
+                {blacklistRecords.length || 3} Active
+              </span>
             </div>
             <div className="flex items-center gap-2 py-2 hover:text-slate-900 cursor-pointer">
               <Building2 className="w-4 h-4 text-slate-400" />
@@ -409,6 +436,67 @@ export const GovernmentPortalPage: React.FC = () => {
         </aside>
 
       </main>
+
+      {/* BLOCKED / BLACKLISTED SUPPLIERS MODAL */}
+      {showBlacklistModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-rose-50 text-rose-600">
+                  <ShieldAlert className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Government Debarred & Blacklisted Suppliers</h3>
+                  <p className="text-xs text-slate-500 font-normal">Active CVC, GeM & AP Government debarment registry</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowBlacklistModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+              {blacklistRecords.length > 0 ? (
+                blacklistRecords.map((item) => (
+                  <div key={item.id} className="p-4 rounded-xl bg-rose-50/50 border border-rose-200/80 space-y-2 text-xs">
+                    <div className="flex items-center justify-between font-bold text-rose-950">
+                      <span>{item.company_name}</span>
+                      <span className="bg-rose-100 text-rose-800 text-[10px] font-mono px-2 py-0.5 rounded border border-rose-200">
+                        {item.reg_number}
+                      </span>
+                    </div>
+                    <p className="text-slate-700 leading-relaxed font-normal">
+                      <strong className="font-semibold text-slate-900">Reason for Debarment: </strong>
+                      {item.reason}
+                    </p>
+                    <div className="flex items-center justify-between text-[11px] text-slate-600 pt-1 border-t border-rose-200/60 font-medium">
+                      <span>Agency: <strong className="text-slate-900 font-semibold">{item.debarment_agency}</strong></span>
+                      <span>Debarred Until: <strong className="text-rose-700 font-bold">{item.debarred_until}</strong></span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-6 text-xs text-slate-500">Loading blacklisted suppliers...</div>
+              )}
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 flex justify-end">
+              <button
+                onClick={() => setShowBlacklistModal(false)}
+                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition-colors"
+              >
+                Close Register
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -69,12 +69,25 @@ class Vendor(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     company_name = Column(String, nullable=False)
-    reg_number = Column(String, nullable=False)
-    contact_email = Column(String, nullable=False)
-    phone = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    is_blacklisted = Column(Boolean, default=False, nullable=False)
+    blacklist_reason = Column(Text, nullable=True)
+    blacklisted_by = Column(String, nullable=True) # e.g. CVC, GeM Portal, Ministry of Finance, AP Govt
+    blacklisted_at = Column(DateTime, nullable=True)
 
     submissions = relationship("Submission", back_populates="vendor", cascade="all, delete-orphan")
+
+
+class BlacklistRecord(Base):
+    __tablename__ = "blacklist_records"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    company_name = Column(String, nullable=False)
+    reg_number = Column(String, nullable=False)
+    gstin = Column(String, nullable=True)
+    reason = Column(Text, nullable=False)
+    debarment_agency = Column(String, default="Government of India / GeM Portal")
+    debarred_until = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class Submission(Base):
