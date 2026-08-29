@@ -69,6 +69,10 @@ class Vendor(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     company_name = Column(String, nullable=False)
+    reg_number = Column(String, nullable=False)
+    contact_email = Column(String, nullable=False)
+    phone = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
     is_blacklisted = Column(Boolean, default=False, nullable=False)
     blacklist_reason = Column(Text, nullable=True)
     blacklisted_by = Column(String, nullable=True) # e.g. CVC, GeM Portal, Ministry of Finance, AP Govt

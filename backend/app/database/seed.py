@@ -166,7 +166,10 @@ def seed_database(db: Session):
         company_name="InfraSys Global Engineering Ltd",
         reg_number="GST37BBBIS5432F1Z2",
         contact_email="bids@infrasys.com",
-        phone="+91 866 2554321"
+        phone="+91 866 2554321",
+        is_blacklisted=True,
+        blacklist_reason="Deburred by CVC & GeM Portal for fraudulent solvency certificate submission",
+        blacklisted_by="Central Vigilance Commission (CVC)"
     )
     v_c = Vendor(
         company_name="Apex Network Labs Vizag",
