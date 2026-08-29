@@ -64,8 +64,18 @@ def seed_database(db: Session):
         phone="+91 866 2468123"
     )
 
+    evaluator_user_alt = User(
+        email="evaluator@example.com",
+        password_hash=get_password_hash("Password@123"),
+        full_name="Smt. M. Anuradha, KAS",
+        organization="GeM Statutory Compliance Verification Cell",
+        role="admin",
+        phone="+91 866 2468456"
+    )
+
     db.add(bidder_user)
     db.add(evaluator_user)
+    db.add(evaluator_user_alt)
     db.flush()
 
     # 2. Create AP e-Procurement Tender Bid & GeM Bids

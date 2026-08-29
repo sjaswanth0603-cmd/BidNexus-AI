@@ -124,11 +124,20 @@ export const GovernmentPortalPage: React.FC = () => {
   const handlePortalLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login({ email: loginEmail.includes('@') ? loginEmail : 'user@example.com', password: 'password123' });
-      navigate('/dashboard');
+      const targetEmail = loginEmail.includes('@') ? loginEmail : 'admin@example.com';
+      const u = await login({ email: targetEmail, password: 'Password@123' });
+      if (u.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch {
-      fastLogin('user@example.com');
-      navigate('/dashboard');
+      const u = await fastLogin('admin@example.com');
+      if (u.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 

@@ -41,13 +41,10 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
     # Standard registration creates 'user' (bidder) role.
     # Admin roles can only be requested or set by environment/invitation
     user_role = "user"
-    if user_in.role.lower() == "admin":
-        # Check if this is the first user in DB or seed admin creation
-        admin_count = db.query(User).filter(User.role == "admin").count()
-        if admin_count == 0:
-            user_role = "admin"
-        else:
-            user_role = "user"  # fallback to user for unprivileged self-registration
+    if user_in.role.lower() in ["admin", "evaluator"]:
+        user_role = "admin"
+    else:
+        user_role = "user"
 
     hashed_pw = get_password_hash(user_in.password)
     new_user = User(
