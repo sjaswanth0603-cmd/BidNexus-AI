@@ -9,9 +9,9 @@ import {
   Building2,
   Award,
   Lock,
-  Fingerprint,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  Briefcase
 } from 'lucide-react';
 
 interface StatutoryDocItem {
@@ -29,64 +29,52 @@ interface StatutoryDocItem {
 
 const initialStatutoryDocs: StatutoryDocItem[] = [
   {
-    id: 'doc-aadhaar',
-    name: 'Aadhaar Verification (Authorized Signatory)',
-    code: 'AADHAAR',
-    icon: Fingerprint,
-    description: 'UIDAI e-Aadhaar identity verification of primary bidder authorized signatory.',
-    status: 'VERIFIED',
-    fileName: 'Authorized_Signatory_Aadhaar_Verified.pdf',
-    verificationSource: 'DigiLocker / UIDAI Vault',
-    issueDate: '2022-04-12',
-    expiryDate: 'Lifetime'
-  },
-  {
     id: 'doc-gst',
-    name: 'GST Registration & GSTR-3B Return Filing',
+    name: 'GST Registration & GSTR-3B Return Filing Status',
     code: 'GSTN',
     icon: Building2,
-    description: 'AP GSTIN Certificate & last 12 months GSTR-3B monthly return filing receipt.',
+    description: 'Active GSTIN Certificate & GSTR-3B monthly return filing verification across GSTN Portal.',
     status: 'VERIFIED',
-    fileName: 'AP_GSTIN_37AAACT9876F1Z8_GSTR3B.pdf',
-    verificationSource: 'GSTN API Gateway',
+    fileName: 'GSTIN_37AAACT9876F1Z8_GSTR3B_Verification.pdf',
+    verificationSource: 'GSTN API Gateway (api.gst.gov.in)',
     issueDate: '2017-07-01',
     expiryDate: 'Active (Filing Regular)'
-  },
-  {
-    id: 'doc-pan',
-    name: 'PAN Card & Income Tax Compliance',
-    code: 'PAN_INCOMETAX',
-    icon: CreditCard,
-    description: 'Permanent Account Number (PAN) & Audited ITR-V filing acknowledgements for last 3 years.',
-    status: 'VERIFIED',
-    fileName: 'Corporate_PAN_ITR_Returns_3Years.pdf',
-    verificationSource: 'Income Tax e-Filing Portal',
-    issueDate: '2015-02-18',
-    expiryDate: 'Active'
   },
   {
     id: 'doc-udyam',
     name: 'Udyam / MSME Registration Certificate',
     code: 'UDYAM',
     icon: Award,
-    description: 'Ministry of MSME Udyam Registration Certificate for EMD waiver & tender fee exemption.',
+    description: 'Ministry of MSME Udyam Registration Certificate for EMD fee exemption & turnover relaxation.',
     status: 'VERIFIED',
-    fileName: 'Udyam_MSME_Registration_AP.pdf',
-    verificationSource: 'Udyam Portal API',
+    fileName: 'Udyam_MSME_Registration_Certificate.pdf',
+    verificationSource: 'Udyam Registration Portal (udyamregistration.gov.in)',
     issueDate: '2021-08-10',
-    expiryDate: 'Valid'
+    expiryDate: 'Valid (Class: Small Enterprise)'
+  },
+  {
+    id: 'doc-pan',
+    name: 'PAN Card & Income Tax Return (ITR-V) Compliance',
+    code: 'PAN_INCOMETAX',
+    icon: CreditCard,
+    description: 'Permanent Account Number (PAN) & Audited Income Tax Return (ITR-V) filing receipts for last 3 years.',
+    status: 'VERIFIED',
+    fileName: 'Corporate_PAN_ITR_Returns_3Years.pdf',
+    verificationSource: 'Income Tax e-Filing Gateway (eportal.incometax.gov.in)',
+    issueDate: '2015-02-18',
+    expiryDate: 'Active'
   },
   {
     id: 'doc-mii',
     name: 'Make in India (MII) Local Content Declaration',
     code: 'MAKE_IN_INDIA',
     icon: ShieldCheck,
-    description: 'Class-I Local Content Declaration (>=50% Local Content) signed by Statutory Auditor.',
+    description: 'Class-I Local Content Declaration (>= 50% Local Content) signed by Statutory Auditor.',
     status: 'VERIFIED',
-    fileName: 'Make_In_India_Class1_Auditor_Certificate.pdf',
-    verificationSource: 'DPIIT Self-Declaration',
+    fileName: 'Make_In_India_Class1_Auditor_Declaration.pdf',
+    verificationSource: 'DPIIT Local Content Portal (dpiit.gov.in)',
     issueDate: '2026-01-15',
-    expiryDate: '2026-12-31'
+    expiryDate: 'Tender Valid'
   },
   {
     id: 'doc-epfo',
@@ -96,31 +84,43 @@ const initialStatutoryDocs: StatutoryDocItem[] = [
     description: 'EPF Establishment Code registration & monthly ECR contribution payment receipts.',
     status: 'VERIFIED',
     fileName: 'EPFO_ESIC_ECR_Challan_Receipts.pdf',
-    verificationSource: 'EPFO Gateway',
+    verificationSource: 'EPFO Gateway (unifiedportal-epfo.gov.in)',
     issueDate: '2026-02-01',
     expiryDate: 'Monthly Validated'
+  },
+  {
+    id: 'doc-startup',
+    name: 'Startup India & NSIC Registration Certificate',
+    code: 'STARTUP_NSIC',
+    icon: Briefcase,
+    description: 'DPIIT Recognized Startup India Certificate & NSIC Single Point Registration for tender exemptions.',
+    status: 'VERIFIED',
+    fileName: 'DPIIT_Startup_India_NSIC_Certificate.pdf',
+    verificationSource: 'Startup India Portal (startupindia.gov.in)',
+    issueDate: '2022-11-05',
+    expiryDate: '2027-11-04'
   },
   {
     id: 'doc-oem',
     name: 'OEM Manufacturer Authorization Form (MAF)',
     code: 'OEM_MAF',
     icon: Lock,
-    description: 'Original OEM Authorization Letter directly from server & SCADA equipment manufacturer.',
+    description: 'Original OEM Authorization Letter directly from server & equipment manufacturer.',
     status: 'VERIFIED',
-    fileName: 'OEM_MAF_Server_SCADA_Authorization.pdf',
-    verificationSource: 'OEM Direct Gateway',
+    fileName: 'OEM_MAF_Server_Equipment_Authorization.pdf',
+    verificationSource: 'GeM OEM Authorization Gateway (gem.gov.in)',
     issueDate: '2026-02-10',
     expiryDate: 'Tender Specific'
   },
   {
     id: 'doc-digilocker',
-    name: 'DigiLocker Verified Vault Certificates',
+    name: 'DigiLocker Verified Document Vault',
     code: 'DIGILOCKER',
     icon: ExternalLink,
     description: 'Cryptographically signed DigiLocker certificates with SHA-256 tamper-proof hash.',
     status: 'VERIFIED',
     fileName: 'DigiLocker_Verified_Document_Vault.pdf',
-    verificationSource: 'DigiLocker National Vault',
+    verificationSource: 'DigiLocker National Vault (api.digilocker.gov.in)',
     issueDate: '2026-02-15',
     expiryDate: 'Cryptographically Signed'
   }
@@ -166,8 +166,8 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold">Statutory & Verification Documents</h2>
-              <p className="text-xs text-slate-300 font-normal">Aadhaar, GSTN, PAN, Udyam, MII & EPFO Verification Portal</p>
+              <h2 className="text-base font-bold">Statutory Compliance Registrations</h2>
+              <p className="text-xs text-slate-300 font-normal">GeM Procurement Statutory & Regulatory Verification Vault</p>
             </div>
           </div>
           <button
@@ -192,7 +192,7 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
           {/* Document Type Selector List (Left 5 cols) */}
           <div className="md:col-span-5 border-r border-slate-200 overflow-y-auto p-3 space-y-2 bg-slate-50/50">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block px-2 py-1">
-              Required Statutory Proofs ({docs.length})
+              GeM Statutory Proofs ({docs.length})
             </span>
 
             {docs.map((doc) => {
@@ -237,7 +237,7 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
                 <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
                   <div className="space-y-1">
                     <span className="bg-slate-100 text-slate-800 font-mono font-bold text-[10px] px-2 py-0.5 rounded border border-slate-200">
-                      DOCUMENT CODE: {selectedDoc.code}
+                      STATUTORY CODE: {selectedDoc.code}
                     </span>
                     <h3 className="text-sm font-bold text-slate-900">{selectedDoc.name}</h3>
                   </div>
@@ -253,19 +253,19 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
                 {/* Metadata Summary */}
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
                   <div className="flex justify-between py-1 border-b border-slate-200/60">
-                    <span className="text-slate-500 font-medium">Verification Gateway:</span>
+                    <span className="text-slate-500 font-medium">Government Portal:</span>
                     <span className="font-bold text-slate-900">{selectedDoc.verificationSource}</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-200/60">
-                    <span className="text-slate-500 font-medium">Current File Name:</span>
+                    <span className="text-slate-500 font-medium">Uploaded Document:</span>
                     <span className="font-mono text-slate-800 truncate max-w-[180px] font-semibold">{selectedDoc.fileName}</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-200/60">
-                    <span className="text-slate-500 font-medium">Issue / Filing Date:</span>
+                    <span className="text-slate-500 font-medium">Registration / Issue Date:</span>
                     <span className="font-semibold text-slate-900">{selectedDoc.issueDate}</span>
                   </div>
                   <div className="flex justify-between py-1">
-                    <span className="text-slate-500 font-medium">Validity / Expiry:</span>
+                    <span className="text-slate-500 font-medium">Statutory Status:</span>
                     <span className="font-bold text-emerald-700">{selectedDoc.expiryDate}</span>
                   </div>
                 </div>
@@ -273,7 +273,7 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
                 {/* Upload & Re-Verify Action Area */}
                 <div className="space-y-3 pt-2">
                   <span className="font-bold text-slate-900 block text-xs">
-                    Update / Upload New {selectedDoc.code} Certificate
+                    Upload Updated {selectedDoc.code} Certificate
                   </span>
 
                   <label className="border-2 border-dashed border-slate-300 hover:border-slate-900 rounded-xl p-5 text-center cursor-pointer transition-colors block bg-slate-50 hover:bg-white">
@@ -293,10 +293,10 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
                       </div>
                       <div>
                         <span className="font-bold text-slate-900 block text-xs">
-                          {isUploading ? 'Verifying with Government Portal...' : 'Click to Upload PDF or Image'}
+                          {isUploading ? 'Verifying with Government Portal API...' : 'Click to Upload Document'}
                         </span>
                         <span className="text-[10px] text-slate-500 font-normal block">
-                          PDF, PNG or JPG up to 10 MB (DigiLocker / GSTN signed)
+                          PDF, PNG or JPG up to 10 MB (DigiLocker / GSTN verified)
                         </span>
                       </div>
                     </div>
@@ -314,13 +314,13 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
         {/* Footer */}
         <div className="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs">
           <span className="text-slate-500 font-normal">
-            8 of 8 Statutory Registrations Verified & Compliant
+            8 of 8 GeM Statutory Requirements Verified & Compliant
           </span>
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition-colors"
           >
-            Close Panel
+            Close Vault
           </button>
         </div>
 
