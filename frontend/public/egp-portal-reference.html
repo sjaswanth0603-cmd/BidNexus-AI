@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eGP Portal - Tenders | Government of Andhra Pradesh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* CSS RESET & VARIABLES */
+    :root {
+      --primary-blue: #0e3780;
+      --primary-dark-blue: #0b2559;
+      --active-tab-blue: #4075db;
+      --light-blue-bg: #eef4ff;
+      --bg-gray: #e9ecef;
+      --card-bg: #ffffff;
+      --border-color: #d0d7de;
+      --text-dark: #1f2937;
+      --text-muted: #6b7280;
+      --accent-green: #059669;
+      --accent-purple: #7c3aed;
+      --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-gray);
+      color: var(--text-dark);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    /* HEADER BANNER */
+    .portal-header {
+      background: linear-gradient(180deg, #ffffff 0%, #eef4ff 100%);
+      border-bottom: 2px solid var(--primary-blue);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 12px 24px;
+    }
+
+    .cm-branding {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .cm-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      border: 2px solid #ffffff;
+    }
+
+    .cm-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cm-title {
+      font-size: 11px;
+      color: #4b5563;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cm-name {
+      font-size: 16px;
+      color: #0f172a;
+      font-weight: 800;
+    }
+
+    .portal-title-center {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .ap-emblem {
+      width: 64px;
+      height: 64px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #2563eb;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .portal-titles {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .portal-titles h1 {
+      font-size: 26px;
+      color: var(--primary-blue);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .portal-titles h2 {
+      font-size: 14px;
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    .header-map-graphic {
+      width: 80px;
+      height: 60px;
+      background: rgba(37, 99, 235, 0.08);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed #93c5fd;
+    }
+
+    /* TOP NAVIGATION */
+    .top-nav {
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+      border-bottom: 1px solid #d1d5db;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      list-style: none;
+      padding: 8px 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .nav-links li a {
+      color: var(--primary-blue);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 12.5px;
+      transition: color 0.15s ease;
+    }
+
+    .nav-links li a:hover {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+
+    .nav-divider {
+      color: #9ca3af;
+      font-size: 11px;
+    }
+
+    /* ALERTS MARQUEE BAR */
+    .alerts-bar {
+      background: #ffffff;
+      border-bottom: 1px solid #d1d5db;
+      display: flex;
+      align-items: center;
+      padding: 6px 24px;
+      max-width: 1400px;
+      margin: 8px auto 0 auto;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .alert-badge {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 12px;
+      white-space: nowrap;
+      margin-right: 16px;
+    }
+
+    .marquee-content {
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .marquee-text {
+      display: inline-block;
+      animation: marquee 25s linear infinite;
+      font-size: 12px;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* MAIN CONTAINER (3 COLUMNS) */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr 300px;
+      gap: 16px;
+      max-width: 1400px;
+      margin: 16px auto;
+      padding: 0 16px;
+    }
+
+    @media (max-width: 1100px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* WIDGET CARDS */
+    .widget-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .widget-header {
+      background: #f8fafc;
+      padding: 8px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .widget-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* LEFT COLUMN WIDGETS */
+    .toggle-group {
+      display: flex;
+      gap: 4px;
+    }
+
+    .toggle-btn {
+      padding: 2px 8px;
+      font-size: 11px;
+      border-radius: 3px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #475569;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .toggle-btn.active {
+      background: #e0e7ff;
+      color: #3730a3;
+      border-color: #a5b4fc;
+    }
+
+    /* CHART CONTAINER */
+    .chart-box {
+      padding: 12px;
+    }
+
+    .chart-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .bars-wrapper {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 140px;
+      padding-top: 20px;
+      border-bottom: 1px solid #cbd5e1;
+      position: relative;
+    }
+
+    .y-grid-line {
+      position: absolute;
+      width: 100%;
+      border-top: 1px dashed #e2e8f0;
+      z-index: 1;
+    }
+
+    .bar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      z-index: 2;
+    }
+
+    .bar-value {
+      font-size: 9px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+
+    .bar-pill {
+      width: 18px;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      transition: height 0.3s ease;
+    }
+
+    .bar-label {
+      font-size: 8.5px;
+      color: #64748b;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* STAT CARDS ROW */
+    .stat-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-card-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary-blue);
+      background: #eff6ff;
+      padding: 4px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .stat-card-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    /* ACCORDION MENU */
+    .accordion-list {
+      list-style: none;
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid #e2e8f0;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      color: #334155;
+      background: #ffffff;
+      transition: background 0.15s ease;
+    }
+
+    .accordion-item:hover {
+      background: #f8fafc;
+      color: var(--primary-blue);
+    }
+
+    /* CENTER COLUMN: TENDERS TABS & LIST */
+    .tabs-header {
+      display: flex;
+      align-items: center;
+      background: #e2e8f0;
+      border-bottom: 2px solid #cbd5e1;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: #475569;
+      cursor: pointer;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: #3b82f6;
+      color: #ffffff;
+    }
+
+    .tabs-more {
+      margin-left: auto;
+      padding-right: 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-blue);
+      text-decoration: none;
+    }
+
+    .tabs-more:hover {
+      text-decoration: underline;
+    }
+
+    /* TENDER CARDS LIST */
+    .tenders-container {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tender-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 12px 14px;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .tender-card:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 3px 8px rgba(37,99,235,0.1);
+    }
+
+    .tender-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .tender-id {
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 12px;
+    }
+
+    .tender-closing-date {
+      font-size: 11px;
+      font-weight: 600;
+      color: #1e40af;
+      background: #eff6ff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #bfdbfe;
+    }
+
+    .tender-ifb {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1d4ed8;
+      margin-bottom: 6px;
+    }
+
+    .tender-desc {
+      font-size: 11.5px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    /* RIGHT COLUMN: LOGIN & QUICK SERVICES */
+    .login-box {
+      padding: 14px;
+    }
+
+    .login-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .forgot-link {
+      font-size: 11px;
+      color: var(--primary-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 12px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+    }
+
+    .login-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn-register {
+      flex: 1;
+      padding: 8px;
+      background: #002288;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-login {
+      flex: 1;
+      padding: 8px;
+      background: #0e3780;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-login:hover {
+      background: #0b2559;
+    }
+
+    /* QUICK LINKS LIST */
+    .quick-links-list {
+      list-style: none;
+    }
+
+    .quick-link-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+      font-weight: 600;
+      font-size: 12px;
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+
+    .quick-link-item:hover {
+      background: #f8fafc;
+      color: var(--primary-blue);
+    }
+
+    .video-tutorials-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #dc2626;
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 12px;
+      text-decoration: none;
+      margin: 10px 12px;
+    }
+
+    .video-tutorials-btn:hover {
+      background: #b91c1c;
+    }
+
+    /* NEWS BOX */
+    .news-content {
+      padding: 10px 12px;
+      font-size: 11.5px;
+      color: #475569;
+      line-height: 1.5;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    /* FOOTER */
+    .portal-footer {
+      background: #ffffff;
+      border-top: 1px solid #cbd5e1;
+      padding: 16px;
+      text-align: center;
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PORTAL HEADER -->
+  <header class="portal-header">
+    <div class="header-top">
+      <div class="cm-branding">
+        <div class="cm-avatar">AP</div>
+        <div class="cm-details">
+          <span class="cm-title">Hon'ble Chief Minister</span>
+          <span class="cm-name">Nara Chandrababu Naidu</span>
+        </div>
+      </div>
+
+      <div class="portal-title-center">
+        <div class="ap-emblem">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="portal-titles">
+          <h1>eGP Portal - Tenders</h1>
+          <h2>Government of Andhra Pradesh</h2>
+        </div>
+      </div>
+
+      <div class="header-map-graphic">
+        <span style="font-size: 10px; font-weight: 700; color: #2563eb;">AP MAP</span>
+      </div>
+    </div>
+
+    <!-- TOP NAVIGATION -->
+    <nav class="top-nav">
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li class="nav-divider">|</li>
+        <li><a href="#">Guidelines</a></li>
+        <li class="nav-divider">|</li>
+        <li><a href="#">MIS Reports</a></li>
+        <li class="nav-divider">|</li>
+        <li><a href="#">GO's</a></li>
+        <li class="nav-divider">|</li>
+        <li><a href="#">FAQs</a></li>
+        <li class="nav-divider">|</li>
+        <li><a href="#">Suggestions</a></li>
+        <li class="nav-divider">|</li>
+        <li><a href="#">Support Desk</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ALERTS MARQUEE BAR -->
+  <div class="alerts-bar">
+    <span class="alert-badge">Important Alerts !</span>
+    <div class="marquee-content">
+      <span class="marquee-text">
+        Welcome to Andhra Pradesh e-Procurement Portal. Bidders are advised to submit bids well before bid closing date. | New GO released regarding EMD Exemption for MSMEs. | System Maintenance scheduled every Sunday 01:00 AM - 04:00 AM.
+      </span>
+    </div>
+  </div>
+
+  <!-- MAIN 3-COLUMN LAYOUT -->
+  <main class="main-grid">
+
+    <!-- LEFT COLUMN -->
+    <aside className="left-column">
+
+      <!-- TENDERS PUBLISHED WIDGET CHART -->
+      <div class="widget-box">
+        <div class="widget-header">
+          <span class="widget-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+            Tenders
+          </span>
+          <div class="toggle-group">
+            <button class="toggle-btn active">Count</button>
+            <button class="toggle-btn">Value</button>
+          </div>
+        </div>
+
+        <div class="chart-box">
+          <div class="chart-title">Tenders Published</div>
+          <div class="bars-wrapper">
+            <div class="y-grid-line" style="top: 20%;"></div>
+            <div class="y-grid-line" style="top: 50%;"></div>
+            <div class="y-grid-line" style="top: 80%;"></div>
+
+            <!-- Bar 1 -->
+            <div class="bar-item">
+              <span class="bar-value">26.09K</span>
+              <div class="bar-pill" style="height: 35px; background: #1d4ed8;"></div>
+              <span class="bar-label">2026-27</span>
+            </div>
+
+            <!-- Bar 2 -->
+            <div class="bar-item">
+              <span class="bar-value">66.77K</span>
+              <div class="bar-pill" style="height: 80px; background: #059669;"></div>
+              <span class="bar-label">2025-26</span>
+            </div>
+
+            <!-- Bar 3 -->
+            <div class="bar-item">
+              <span class="bar-value">44.97K</span>
+              <div class="bar-pill" style="height: 55px; background: #d97706;"></div>
+              <span class="bar-label">2024-25</span>
+            </div>
+
+            <!-- Bar 4 -->
+            <div class="bar-item">
+              <span class="bar-value">87.82K</span>
+              <div class="bar-pill" style="height: 105px; background: #15803d;"></div>
+              <span class="bar-label">2023-24</span>
+            </div>
+
+            <!-- Bar 5 -->
+            <div class="bar-item">
+              <span class="bar-value">76.53K</span>
+              <div class="bar-pill" style="height: 92px; background: #7c3aed;"></div>
+              <span class="bar-label">2022-23</span>
+            </div>
+
+            <!-- Bar 6 -->
+            <div class="bar-item">
+              <span class="bar-value">68.84K</span>
+              <div class="bar-pill" style="height: 82px; background: #2563eb;"></div>
+              <span class="bar-label">2021-22</span>
+            </div>
+
+            <!-- Bar 7 -->
+            <div class="bar-item">
+              <span class="bar-value">53.44K</span>
+              <div class="bar-pill" style="height: 64px; background: #0d9488;"></div>
+              <span class="bar-label">2020-21</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE TENDERS STAT CARDS -->
+      <div class="stat-cards-grid">
+        <div class="stat-card">
+          <div class="stat-card-title">Active Tenders</div>
+          <div class="stat-card-val">2231</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-title">Closing Today</div>
+          <div class="stat-card-val">0</div>
+        </div>
+      </div>
+
+      <!-- ACCORDION LINKS -->
+      <div class="widget-box">
+        <ul class="accordion-list">
+          <li class="accordion-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Blocked Suppliers
+          </li>
+          <li class="accordion-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>
+            Banking Partners
+          </li>
+        </ul>
+      </div>
+
+    </aside>
+
+    <!-- CENTER COLUMN: TENDERS TABS AND CARDS LIST -->
+    <section className="center-column">
+      <div class="widget-box">
+        <div class="tabs-header">
+          <button class="tab-btn active">Current Tenders</button>
+          <button class="tab-btn">Corrigendums</button>
+          <button class="tab-btn">Upcoming Tenders</button>
+          <a href="#" class="tabs-more">More...</a>
+        </div>
+
+        <div class="tenders-container">
+          
+          <!-- TENDER CARD 1 -->
+          <div class="tender-card">
+            <div class="tender-header-row">
+              <span class="tender-id">Tender ID: 980990</span>
+              <span class="tender-closing-date">Bid Closing Date: 08/09/2026 04:30 PM</span>
+            </div>
+            <div class="tender-ifb">IFB No/Tender No: Rc.E6-112037/2025</div>
+            <div class="tender-desc">
+              general funds in Division No:VIJAYAWADA MUNICIPAL CORPORATION.
+            </div>
+          </div>
+
+          <!-- TENDER CARD 2 -->
+          <div class="tender-card">
+            <div class="tender-header-row">
+              <span class="tender-id">Tender ID: 983373</span>
+              <span class="tender-closing-date">Bid Closing Date: 03/09/2026 03:00 PM</span>
+            </div>
+            <div class="tender-ifb">IFB No/Tender No: NIT No. 292/DB/NMC/GEN/CSR/2026-27, Dated: 28.08.2026</div>
+            <div class="tender-desc">
+              Construction of CC Drain from 1). E.P.No NVG26-A3/DF to E.P.No NVG26-B7/DF. 2.) D.No 28-7-31 to NVG26-B7/DF. 3). D.No 28-7-78 to NVG26-B7/DF in Sadavarai Palem in Division No. 03 Nellore Municipal Corporation. in Division No:Nellore Municipal Corporation.
+            </div>
+          </div>
+
+          <!-- TENDER CARD 3 -->
+          <div class="tender-card">
+            <div class="tender-header-row">
+              <span class="tender-id">Tender ID: 983369</span>
+              <span class="tender-closing-date">Bid Closing Date: 03/09/2026 03:00 PM</span>
+            </div>
+            <div class="tender-ifb">IFB No/Tender No: NIT No. 605/DB/NMC/GEN/2026-27, Dated: 28.08.2026</div>
+            <div class="tender-desc">
+              Beautification of Railway Underpass (RUB) with Theme-Based Heritage Wall Art Paintings and Welcome / Exit Gateway Murals at Division No 9 in Nellore Municipal Corporation. in Division No:Nellore Municipal Corporation.
+            </div>
+          </div>
+
+          <!-- TENDER CARD 4 -->
+          <div class="tender-card">
+            <div class="tender-header-row">
+              <span class="tender-id">Tender ID: 978204</span>
+              <span class="tender-closing-date">Bid Closing Date: 03/09/2026 03:00 PM</span>
+            </div>
+            <div class="tender-ifb">IFB No/Tender No: NIT No. 298/DB/NMC/GEN/2026-27, Dated: 28.08.2026</div>
+            <div class="tender-desc">
+              Laying of CC Road from D No 27/8/38 to Pole No Ntr14/ch/c2 near SMK Catering Beside and Raising Manholes in Division No 11 in Nellore Municipal Corporation. in Division No:Nellore Municipal Corporation.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: LOGIN & QUICK SERVICES -->
+    <aside className="right-column">
+      
+      <!-- LOGIN WIDGET -->
+      <div class="widget-box">
+        <div class="login-box">
+          <div class="login-top-row">
+            <div class="widget-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Login
+            </div>
+            <a href="#" class="forgot-link">Forgot Password ?</a>
+          </div>
+
+          <form action="#" method="POST" onsubmit="return false;">
+            <div class="form-group">
+              <input type="text" class="form-input" placeholder="User Name" required>
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-input" placeholder="Password" required>
+            </div>
+            <div class="login-actions">
+              <button type="button" class="btn-register">Register ?</button>
+              <button type="submit" class="btn-login">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- QUICK SERVICES LINKS -->
+      <div class="widget-box">
+        <ul class="quick-links-list">
+          <li>
+            <a href="#" class="quick-link-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 11l2 2 4-4"/></svg>
+              Forgot User ID?
+            </a>
+          </li>
+          <li>
+            <a href="#" class="quick-link-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Check EMD Status
+            </a>
+          </li>
+          <li>
+            <a href="#" class="quick-link-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+              Reset Certificate
+            </a>
+          </li>
+          <li>
+            <a href="#" class="quick-link-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download emSigner for Windows
+            </a>
+          </li>
+        </ul>
+
+        <a href="#" class="video-tutorials-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Video Tutorials
+        </a>
+      </div>
+
+      <!-- NEWS PANEL -->
+      <div class="widget-box">
+        <div class="widget-header">
+          <span class="widget-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/></svg>
+            News
+          </span>
+        </div>
+        <div class="news-content">
+          As Per G.O.Ms.No.16, IT,E&C Department, Dated: 27.09.2018, Government of Andhra Pradesh is Implementing the 'Konugolu' portal to provide eAuction Services to All Government Procurement Entities.
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="portal-footer">
+    <p>Site Designed, Developed & Maintained by IT, E&C Department, Government of Andhra Pradesh.</p>
+    <p style="margin-top: 4px; color: #94a3b8;">© 2026 eGP Portal - Andhra Pradesh Procurement System. All Rights Reserved.</p>
+  </footer>
+
+</body>
+</html>

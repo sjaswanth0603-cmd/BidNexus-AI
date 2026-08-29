@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --text-primary: #0B1228;
+    --text-secondary: #31506F;
+    --brand-green: #009F6B;
+    --brand-blue: #174EE8;
+    --brand-purple: #5545FF;
+    --bg-main: #FFFFFF;
+    --bg-soft-green: #ECFFF8;
+    --bg-soft-blue: #F3F7FF;
+    --card-border: #E7ECF2;
+  }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    background-color: #FFFFFF;
+    color: #0B1228;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    color: #0B1228;
+  }
+}
+
+/* Hero Typography Matching First UI Design */
+.hero-title {
+  font-size: clamp(36px, 5vw, 68px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  color: #0B1228;
+}
+
+/* Light Theme Card System */
+.light-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E7ECF2;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(11, 18, 40, 0.03);
+  transition: all 0.2s ease-in-out;
+}
+
+.light-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 8px 30px rgba(11, 18, 40, 0.06);
+}
+
+/* Soft Accent Panels */
+.bg-soft-green {
+  background-color: #ECFFF8;
+}
+
+.bg-soft-blue {
+  background-color: #F3F7FF;
+}
+
+.border-light {
+  border-color: #E7ECF2;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}

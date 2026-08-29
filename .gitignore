@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Environment & Config Secrets
+.env
+.env.local
+
+# Build & Output Directories
+dist/
+build/
+.output/
+
+# Local Database & Upload Files
+*.db
+*.sqlite3
+uploads/*
+!uploads/.gitkeep
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

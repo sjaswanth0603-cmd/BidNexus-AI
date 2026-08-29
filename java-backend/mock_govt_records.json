@@ -1,0 +1,56 @@
+{
+  "gst_records": [
+    {
+      "gstin": "GST37AAACT9876F1Z8",
+      "company_name": "TechCorp Solutions AP Pvt Ltd",
+      "status": "ACTIVE",
+      "taxpayer_type": "Regular",
+      "registration_date": "2018-04-12"
+    },
+    {
+      "gstin": "GST37BBBIS5432F1Z2",
+      "company_name": "InfraSys Global Engineering Ltd",
+      "status": "ACTIVE",
+      "taxpayer_type": "Regular",
+      "registration_date": "2019-09-20"
+    },
+    {
+      "gstin": "GST37CCCAN1122F1Z5",
+      "company_name": "Apex Network Labs Vizag",
+      "status": "ACTIVE",
+      "taxpayer_type": "Regular",
+      "registration_date": "2020-01-15"
+    }
+  ],
+  "pan_records": [
+    {
+      "pan": "AAACT9876F",
+      "name": "TECHCORP SOLUTIONS AP PRIVATE LIMITED",
+      "status": "VALID"
+    },
+    {
+      "pan": "BBBIS5432F",
+      "name": "INFRASYS GLOBAL ENGINEERING LIMITED",
+      "status": "VALID"
+    },
+    {
+      "pan": "CCCAN1122F",
+      "name": "APEX NETWORK LABS VIZAG",
+      "status": "VALID"
+    }
+  ],
+  "udyam_records": [
+    {
+      "udyam_no": "UDYAM-AP-03-0012345",
+      "enterprise_name": "TechCorp Solutions AP Pvt Ltd",
+      "category": "Medium Enterprise",
+      "verified": true
+    },
+    {
+      "udyam_no": "UDYAM-AP-08-0098765",
+      "enterprise_name": "Apex Network Labs Vizag",
+      "category": "Small Enterprise",
+      "verified": true
+    }
+  ]
+}
