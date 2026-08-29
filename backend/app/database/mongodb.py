@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 # Synchronous PyMongo Client for background syncing & scripts
 try:
-    mongo_client = MongoClient(settings.MONGODB_URL, serverSelectionTimeoutMS=2000)
+    mongo_client = MongoClient(settings.MONGODB_URL, serverSelectionTimeoutMS=3000)
     mongo_db = mongo_client[settings.MONGODB_DB_NAME]
 except Exception as e:
     logger.warning(f"MongoDB Sync Client connection deferred: {e}")
@@ -16,7 +16,7 @@ except Exception as e:
 
 # Asynchronous Motor Client for FastAPI async endpoints
 try:
-    async_mongo_client = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=2000)
+    async_mongo_client = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=3000)
     async_mongo_db = async_mongo_client[settings.MONGODB_DB_NAME]
 except Exception as e:
     logger.warning(f"MongoDB Async Client connection deferred: {e}")
@@ -43,7 +43,7 @@ def check_mongodb_connection() -> dict:
             "mongodb_url": settings.MONGODB_URL,
             "database": settings.MONGODB_DB_NAME,
             "error": str(err),
-            "info": "MongoDB connection configured. Start local mongod or set MONGODB_URL to MongoDB Atlas cloud connection URI."
+            "info": "MongoDB connection configured. Set MONGODB_URL to MongoDB Atlas cloud connection URI."
         }
     return {
         "status": "not_initialized",
@@ -52,9 +52,43 @@ def check_mongodb_connection() -> dict:
     }
 
 
+def save_submission_to_mongodb(submission_data: dict):
+    """
+    Real-time push of single vendor compliance evaluation record to MongoDB.
+    """
+    if mongo_db is None:
+        return False
+    try:
+        sub_id = submission_data.get("id")
+        if sub_id:
+            mongo_db.vendor_submissions.replace_one({"id": sub_id}, submission_data, upsert=True)
+            logger.info(f"Synced submission {sub_id} to MongoDB Atlas")
+            return True
+    except Exception as err:
+        logger.error(f"Failed to push submission to MongoDB: {err}")
+        return False
+
+
+def save_bid_to_mongodb(bid_data: dict):
+    """
+    Real-time push of single procurement bid record to MongoDB.
+    """
+    if mongo_db is None:
+        return False
+    try:
+        bid_id = bid_data.get("id")
+        if bid_id:
+            mongo_db.bids.replace_one({"id": bid_id}, bid_data, upsert=True)
+            logger.info(f"Synced bid {bid_id} to MongoDB Atlas")
+            return True
+    except Exception as err:
+        logger.error(f"Failed to push bid to MongoDB: {err}")
+        return False
+
+
 def sync_all_data_to_mongodb(db_session=None):
     """
-    Sync all relational database records (Bids, Requirements, Submissions, Audit Logs) directly into MongoDB collections.
+    Sync all database records (Bids, Requirements, Submissions, Audit Logs) directly into MongoDB Atlas collections.
     """
     if mongo_db is None:
         return {"status": "error", "message": "MongoDB client is not available"}
@@ -156,7 +190,7 @@ def sync_all_data_to_mongodb(db_session=None):
 
         return {
             "status": "success",
-            "message": "All database records synced to MongoDB successfully",
+            "message": "All database records synced to MongoDB Atlas successfully",
             "synced_counts": {
                 "users": len(user_docs),
                 "bids": len(bid_docs),

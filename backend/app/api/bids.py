@@ -43,6 +43,12 @@ def create_bid(bid_in: BidCreate, db: Session = Depends(get_db), current_user: U
     db.add(audit)
     db.commit()
 
+    try:
+        from app.database.mongodb import sync_all_data_to_mongodb
+        sync_all_data_to_mongodb(db)
+    except Exception:
+        pass
+
     return new_bid
 
 

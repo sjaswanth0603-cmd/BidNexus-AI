@@ -265,6 +265,12 @@ def run_compliance_verification(
     db.add(audit)
     db.commit()
 
+    try:
+        from app.database.mongodb import sync_all_data_to_mongodb
+        sync_all_data_to_mongodb(db)
+    except Exception:
+        pass
+
     return {
         "submission_id": submission.id,
         "vendor": vendor.company_name,
