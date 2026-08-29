@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -9,13 +9,16 @@ import {
   ShieldAlert,
   FlaskConical,
   UserCheck,
-  ShieldCheck
+  ShieldCheck,
+  Fingerprint
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { StatutoryDocumentSidebar } from './StatutoryDocumentSidebar';
 
 export const Sidebar: React.FC = () => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
+  const [showStatutorySidebar, setShowStatutorySidebar] = useState<boolean>(false);
 
   return (
     <aside className="w-64 bg-white border-r border-slate-200/90 hidden md:flex flex-col justify-between min-h-[calc(100vh-4.5rem)] p-5 shadow-2xs font-sans shrink-0">
@@ -80,6 +83,14 @@ export const Sidebar: React.FC = () => {
                 <FlaskConical className="w-4 h-4 text-emerald-500" />
                 <span>AI Verification Console</span>
               </NavLink>
+
+              <button
+                onClick={() => setShowStatutorySidebar(true)}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 transition-all text-left"
+              >
+                <Fingerprint className="w-4 h-4 text-blue-600" />
+                <span>Statutory Proofs (Aadhaar, GST, PAN)</span>
+              </button>
             </nav>
           </div>
         ) : (
@@ -159,6 +170,14 @@ export const Sidebar: React.FC = () => {
                 <History className="w-4 h-4 text-amber-500" />
                 <span>Audit Logs Timeline</span>
               </NavLink>
+
+              <button
+                onClick={() => setShowStatutorySidebar(true)}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 transition-all text-left"
+              >
+                <Fingerprint className="w-4 h-4 text-blue-600" />
+                <span>Statutory Proofs (Aadhaar, GST, PAN)</span>
+              </button>
             </nav>
           </div>
         )}
@@ -174,6 +193,11 @@ export const Sidebar: React.FC = () => {
           AI Procurement Compliance Verification Platform.
         </p>
       </div>
+
+      <StatutoryDocumentSidebar
+        isOpen={showStatutorySidebar}
+        onClose={() => setShowStatutorySidebar(false)}
+      />
     </aside>
   );
 };
