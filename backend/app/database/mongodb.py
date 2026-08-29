@@ -69,6 +69,23 @@ def save_submission_to_mongodb(submission_data: dict):
         return False
 
 
+def save_user_to_mongodb(user_data: dict):
+    """
+    Real-time push of user profile and authentication event to MongoDB.
+    """
+    if mongo_db is None:
+        return False
+    try:
+        user_id = user_data.get("id")
+        if user_id:
+            mongo_db.users.replace_one({"id": user_id}, user_data, upsert=True)
+            logger.info(f"Synced user profile {user_id} to MongoDB Atlas")
+            return True
+    except Exception as err:
+        logger.error(f"Failed to push user to MongoDB: {err}")
+        return False
+
+
 def save_bid_to_mongodb(bid_data: dict):
     """
     Real-time push of single procurement bid record to MongoDB.
