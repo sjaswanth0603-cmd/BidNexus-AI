@@ -19,10 +19,8 @@ services:
         value: auto
 
   # 2. React Vite Frontend Static Site
-  - type: web
+  - type: static
     name: bidnexus-ai-frontend
-    env: static
-    plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
