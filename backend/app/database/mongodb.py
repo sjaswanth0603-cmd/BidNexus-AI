@@ -1,4 +1,5 @@
 import logging
+import ssl
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.config import settings
@@ -7,7 +8,11 @@ logger = logging.getLogger(__name__)
 
 # Synchronous PyMongo Client for background syncing & scripts
 try:
-    mongo_client = MongoClient(settings.MONGODB_URL, serverSelectionTimeoutMS=3000)
+    mongo_client = MongoClient(
+        settings.MONGODB_URL,
+        serverSelectionTimeoutMS=5000,
+        tlsAllowInvalidCertificates=True
+    )
     mongo_db = mongo_client[settings.MONGODB_DB_NAME]
 except Exception as e:
     logger.warning(f"MongoDB Sync Client connection deferred: {e}")
@@ -16,7 +21,11 @@ except Exception as e:
 
 # Asynchronous Motor Client for FastAPI async endpoints
 try:
-    async_mongo_client = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=3000)
+    async_mongo_client = AsyncIOMotorClient(
+        settings.MONGODB_URL,
+        serverSelectionTimeoutMS=5000,
+        tlsAllowInvalidCertificates=True
+    )
     async_mongo_db = async_mongo_client[settings.MONGODB_DB_NAME]
 except Exception as e:
     logger.warning(f"MongoDB Async Client connection deferred: {e}")
