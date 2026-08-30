@@ -1,18 +1,17 @@
 from typing import List
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
-from app.database.session import get_db
-from app.models.models import AuditLog, User
+from app.database.mongodb import audit_logs_col
 from app.schemas.schemas import AuditLogOut
-from app.auth.security import get_current_user, get_current_admin
+from app.auth.security import get_current_user, get_current_admin, UserSession
 
 router = APIRouter(prefix="/audit-logs", tags=["Audit Logs"])
 
 @router.get("", response_model=List[AuditLogOut])
 def get_audit_logs(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin)
+    current_user: UserSession = Depends(get_current_admin)
 ):
-    logs = db.query(AuditLog).order_by(AuditLog.timestamp.desc()).limit(100).all()
+    audits = audit_logs_col()
+    logs = list(audits.find().sort("timestamp", -1).limit(100))
     return logs
+

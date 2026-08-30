@@ -1,106 +1,128 @@
 import uuid
+from datetime import datetime, timezone
 from typing import List, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 
-from app.database.session import get_db
-from app.models.models import (
-    Bid, Requirement, Vendor, Submission, Document,
-    DocumentChunk, ComplianceResult, AuditLog, User
+from app.database.mongodb import (
+    bids_col, requirements_col, vendors_col, submissions_col,
+    documents_col, chunks_col, results_col, audit_logs_col
 )
 from app.schemas.schemas import ComplianceResultOut, SubmissionOut
-from app.auth.security import get_current_user, get_optional_current_user
+from app.auth.security import get_current_user, get_optional_current_user, UserSession
 from app.compliance.engine import compliance_engine
 
 router = APIRouter(prefix="/compliance", tags=["Compliance Engine"])
 
+@router.api_route("/compare", methods=["GET", "POST"])
 @router.api_route("/{bid_id}/compare", methods=["GET", "POST"])
 def compare_vendors(
-    bid_id: str,
-    db: Session = Depends(get_db),
+    bid_id: Optional[str] = None,
     current_user = Depends(get_optional_current_user)
 ):
-    bid = db.query(Bid).filter(
-        (Bid.id == bid_id) | (Bid.bid_number == bid_id) | (Bid.bid_number.contains(bid_id))
-    ).first()
+    bids = bids_col()
+    bid = None
+    if bid_id:
+        bid = bids.find_one({
+            "$or": [
+                {"id": bid_id},
+                {"bid_number": bid_id},
+                {"bid_number": {"$regex": bid_id, "$options": "i"}}
+            ]
+        })
     if not bid:
-        bid = db.query(Bid).first()
+        bid = bids.find_one()
     if not bid:
         raise HTTPException(status_code=404, detail="Bid not found.")
 
-    resolved_bid_id = bid.id
-    requirements = db.query(Requirement).filter(Requirement.bid_id == resolved_bid_id).all()
-    submissions = db.query(Submission).filter(Submission.bid_id == resolved_bid_id).all()
+
+    resolved_bid_id = bid["id"]
+    reqs = requirements_col()
+    requirements = list(reqs.find({"bid_id": resolved_bid_id}))
+    
+    subs = submissions_col()
+    submissions = list(subs.find({"bid_id": resolved_bid_id}))
 
     # If no submissions exist yet for this bid, auto-evaluate available vendors
     if not submissions:
-        vendors = db.query(Vendor).all()
+        vendors = list(vendors_col().find())
         for v in vendors:
             try:
-                run_compliance_verification(bid_id=resolved_bid_id, vendor_id=v.id, db=db, current_user=current_user)
+                run_compliance_verification(bid_id=resolved_bid_id, vendor_id=v["id"], current_user=current_user)
             except Exception:
                 pass
-        submissions = db.query(Submission).filter(Submission.bid_id == resolved_bid_id).all()
+        submissions = list(subs.find({"bid_id": resolved_bid_id}))
 
+    vendors = vendors_col()
+    results_collection = results_col()
     matrix = []
+
     for sub in submissions:
-        vendor = sub.vendor
+        vendor = vendors.find_one({"id": sub["vendor_id"]})
         if not vendor:
             continue
-        results = db.query(ComplianceResult).filter(ComplianceResult.submission_id == sub.id).all()
+        sub_results = list(results_collection.find({"submission_id": sub["id"]}))
         
-        mandatory_failures = []
-        for r in results:
-            if r.status == "NON_COMPLIANT" and r.requirement and r.requirement.mandatory:
-                mandatory_failures.append(r.requirement.requirement)
+        # Build requirement lookup dict for mapping requirements
+        req_map = {r["id"]: r for r in requirements}
+        for r in requirements:
+            if "requirement_id" in r:
+                req_map[r["requirement_id"]] = r
 
-        risk_lvl = "HIGH" if (len(mandatory_failures) > 0 or sub.compliance_score < 60) else ("MEDIUM" if sub.compliance_score < 85 else "LOW")
+        mandatory_failures = []
+        for r in sub_results:
+            req_item = req_map.get(r.get("requirement_id"), {})
+            if r.get("status") == "NON_COMPLIANT" and req_item.get("mandatory", False):
+                mandatory_failures.append(req_item.get("requirement", r.get("requirement_id")))
+
+        score = float(sub.get("compliance_score", 0.0))
+        is_bl = vendor.get("is_blacklisted", False)
+        risk_lvl = "HIGH" if (len(mandatory_failures) > 0 or score < 60 or is_bl) else ("MEDIUM" if score < 85 else "LOW")
         
-        if len(mandatory_failures) > 0 or vendor.is_blacklisted:
+        if len(mandatory_failures) > 0 or is_bl:
             recommendation = "DISQUALIFIED (Mandatory Statutory Non-Compliance / Debarment)"
-        elif sub.compliance_score >= 85.0:
+        elif score >= 85.0:
             recommendation = "QUALIFIED (Recommended for Financial L1 Opening)"
         else:
             recommendation = "REQUIRES PROCUREMENT OFFICER REVIEW & OVERRIDE"
 
         matrix.append({
-            "vendor_id": vendor.id,
-            "company_name": vendor.company_name,
-            "reg_number": vendor.reg_number,
-            "compliance_score": sub.compliance_score,
+            "vendor_id": vendor["id"],
+            "company_name": vendor["company_name"],
+            "reg_number": vendor.get("reg_number", ""),
+            "compliance_score": score,
             "risk_level": risk_lvl,
             "ai_recommendation": recommendation,
-            "is_blacklisted": vendor.is_blacklisted,
-            "status": sub.status,
-            "total_evaluated": len(results),
-            "compliant_count": sum(1 for r in results if r.status in ["COMPLIANT", "APPROVED"]),
-            "review_required_count": sum(1 for r in results if r.status == "REVIEW_REQUIRED"),
-            "non_compliant_count": sum(1 for r in results if r.status == "NON_COMPLIANT"),
+            "is_blacklisted": is_bl,
+            "status": sub.get("status", "Pending"),
+            "total_evaluated": len(sub_results),
+            "compliant_count": sum(1 for r in sub_results if r.get("status") in ["COMPLIANT", "APPROVED"]),
+            "review_required_count": sum(1 for r in sub_results if r.get("status") == "REVIEW_REQUIRED"),
+            "non_compliant_count": sum(1 for r in sub_results if r.get("status") == "NON_COMPLIANT"),
             "mandatory_failures": mandatory_failures,
             "requirement_statuses": {
-                r.requirement_id: {
-                    "status": r.status,
-                    "reasoning": r.reasoning,
-                    "doc": r.source_doc_name,
-                    "page": r.source_page
+                r.get("requirement_id"): {
+                    "status": r.get("status"),
+                    "reasoning": r.get("reasoning"),
+                    "doc": r.get("source_doc_name"),
+                    "page": r.get("source_page")
                 }
-                for r in results
+                for r in sub_results
             }
         })
 
     return {
         "bid": {
-            "id": bid.id,
-            "bid_number": bid.bid_number,
-            "title": bid.title
+            "id": bid["id"],
+            "bid_number": bid["bid_number"],
+            "title": bid["title"]
         },
         "requirements": [
             {
-                "id": r.id,
-                "requirement_id": r.requirement_id,
-                "category": r.category,
-                "requirement": r.requirement,
-                "mandatory": r.mandatory
+                "id": r["id"],
+                "requirement_id": r.get("requirement_id"),
+                "category": r.get("category"),
+                "requirement": r.get("requirement"),
+                "mandatory": r.get("mandatory", True)
             }
             for r in requirements
         ],
@@ -112,77 +134,71 @@ def compare_vendors(
 def run_compliance_verification(
     bid_id: str,
     vendor_id: str,
-    db: Session = Depends(get_db),
     current_user = Depends(get_optional_current_user)
 ):
-    bid = db.query(Bid).filter(
-        (Bid.id == bid_id) | (Bid.bid_number == bid_id) | (Bid.bid_number.contains(bid_id))
-    ).first()
+    bids = bids_col()
+    bid = bids.find_one({
+        "$or": [
+            {"id": bid_id},
+            {"bid_number": bid_id},
+            {"bid_number": {"$regex": bid_id, "$options": "i"}}
+        ]
+    })
     if not bid:
-        bid = db.query(Bid).first()
+        bid = bids.find_one()
     if not bid:
         raise HTTPException(status_code=404, detail="Bid not found.")
 
-    resolved_bid_id = bid.id
+    resolved_bid_id = bid["id"]
 
-    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    vendors = vendors_col()
+    vendor = vendors.find_one({"id": vendor_id})
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found.")
 
-    submission = db.query(Submission).filter(
-        Submission.bid_id == resolved_bid_id,
-        Submission.vendor_id == vendor_id
-    ).first()
+    submissions = submissions_col()
+    submission = submissions.find_one({
+        "bid_id": resolved_bid_id,
+        "vendor_id": vendor_id
+    })
     if not submission:
-        # Create submission automatically if missing
-        submission = Submission(
-            bid_id=resolved_bid_id,
-            vendor_id=vendor_id,
-            status="Pending"
-        )
-        db.add(submission)
-        db.commit()
-        db.refresh(submission)
+        sub_id = str(uuid.uuid4())
+        submission = {
+            "id": sub_id,
+            "bid_id": resolved_bid_id,
+            "vendor_id": vendor_id,
+            "status": "Pending",
+            "compliance_score": 0.0,
+            "submitted_at": datetime.now(timezone.utc).isoformat()
+        }
+        submissions.insert_one(submission)
 
-    # Fetch requirements
-    requirements = db.query(Requirement).filter(Requirement.bid_id == resolved_bid_id).all()
+    reqs = requirements_col()
+    requirements = list(reqs.find({"bid_id": resolved_bid_id}))
     if not requirements:
         default_reqs = [
-            Requirement(bid_id=resolved_bid_id, requirement_id="REQ-101", category="Financial", requirement="Minimum Average Annual Turnover >= ₹5.0 Crore", operator=">=", value="5.0", unit="Crore", mandatory=True, evidence_required="CA Turnover Certificate", source_page=1, confidence=0.98),
-            Requirement(bid_id=resolved_bid_id, requirement_id="REQ-102", category="Technical", requirement="Minimum 32 GB DDR5 RAM per node", operator=">=", value="32", unit="GB", mandatory=True, evidence_required="OEM Datasheet", source_page=2, confidence=0.98),
-            Requirement(bid_id=resolved_bid_id, requirement_id="REQ-103", category="Certification", requirement="Valid ISO 9001:2015 Quality Certificate", operator="date_validity", value="Valid", unit="Certificate", mandatory=True, evidence_required="ISO 9001 Copy", source_page=3, confidence=0.95),
-            Requirement(bid_id=resolved_bid_id, requirement_id="REQ-104", category="Certification", requirement="Manufacturer Authorization Form (MAF) from OEM", operator="required", value="OEM MAF", unit="Certificate", mandatory=True, evidence_required="OEM MAF Letter", source_page=4, confidence=0.95),
-            Requirement(bid_id=resolved_bid_id, requirement_id="REQ-105", category="Warranty", requirement="Minimum 3 Years Comprehensive OEM Warranty Support", operator=">=", value="3", unit="Years", mandatory=True, evidence_required="Warranty Undertaking", source_page=5, confidence=0.98),
+            {"id": str(uuid.uuid4()), "bid_id": resolved_bid_id, "requirement_id": "REQ-101", "category": "Financial", "requirement": "Minimum Average Annual Turnover >= ₹5.0 Crore", "operator": ">=", "value": "5.0", "unit": "Crore", "mandatory": True, "evidence_required": "CA Turnover Certificate", "source_page": 1, "confidence": 0.98},
+            {"id": str(uuid.uuid4()), "bid_id": resolved_bid_id, "requirement_id": "REQ-102", "category": "Technical", "requirement": "Minimum 32 GB DDR5 RAM per node", "operator": ">=", "value": "32", "unit": "GB", "mandatory": True, "evidence_required": "OEM Datasheet", "source_page": 2, "confidence": 0.98},
+            {"id": str(uuid.uuid4()), "bid_id": resolved_bid_id, "requirement_id": "REQ-103", "category": "Certification", "requirement": "Valid ISO 9001:2015 Quality Certificate", "operator": "date_validity", "value": "Valid", "unit": "Certificate", "mandatory": True, "evidence_required": "ISO 9001 Copy", "source_page": 3, "confidence": 0.95},
+            {"id": str(uuid.uuid4()), "bid_id": resolved_bid_id, "requirement_id": "REQ-104", "category": "Certification", "requirement": "Manufacturer Authorization Form (MAF) from OEM", "operator": "required", "value": "OEM MAF", "unit": "Certificate", "mandatory": True, "evidence_required": "OEM MAF Letter", "source_page": 4, "confidence": 0.95},
+            {"id": str(uuid.uuid4()), "bid_id": resolved_bid_id, "requirement_id": "REQ-105", "category": "Warranty", "requirement": "Minimum 3 Years Comprehensive OEM Warranty Support", "operator": ">=", "value": "3", "unit": "Years", "mandatory": True, "evidence_required": "Warranty Undertaking", "source_page": 5, "confidence": 0.98},
         ]
-        db.add_all(default_reqs)
-        db.commit()
-        requirements = db.query(Requirement).filter(Requirement.bid_id == resolved_bid_id).all()
+        reqs.insert_many(default_reqs)
+        requirements = list(reqs.find({"bid_id": resolved_bid_id}))
 
-    req_dicts = [
-        {
-            "id": r.id,
-            "requirement_id": r.requirement_id,
-            "category": r.category,
-            "requirement": r.requirement,
-            "operator": r.operator,
-            "value": r.value,
-            "unit": r.unit,
-            "mandatory": r.mandatory,
-            "evidence_required": r.evidence_required,
-            "source_page": r.source_page
-        }
-        for r in requirements
-    ]
+    docs_col = documents_col()
+    chunks_col_ref = chunks_col()
 
-    docs = db.query(Document).filter(Document.submission_id == submission.id).all()
-    chunks = db.query(DocumentChunk).join(Document).filter(Document.submission_id == submission.id).all()
+    docs = list(docs_col.find({"submission_id": submission["id"]}))
+    doc_ids = [d["id"] for d in docs]
+    chunks = list(chunks_col_ref.find({"document_id": {"$in": doc_ids}})) if doc_ids else []
 
     # If vendor has 0 uploaded documents AND 0 document chunks attached, auto-generate synthetic document chunks ONLY for seed demo vendors
     if not docs and not chunks:
-        company_lower = vendor.company_name.lower()
+        company_lower = vendor["company_name"].lower()
         synthetic_docs_data = []
 
-        if "techcorp" in company_lower or "l1 bidder" in company_lower:
+        if "techcorp" in company_lower or "l1" in company_lower:
             synthetic_docs_data = [
                 {"file_name": "TechCorp_GST_Registration.pdf", "doc_type": "GST Certificate", "page_number": 1, "section": "Page 1", "chunk_text": "AP GSTIN Registration Certificate 37AAACT9876F1Z8 valid and active."},
                 {"file_name": "TechCorp_CA_Turnover.pdf", "doc_type": "Financial Statements", "page_number": 2, "section": "Page 2", "chunk_text": "Audited Financial Report for TechCorp Solutions. FY 2023-24: ₹14.5 Crore, FY 2024-25: ₹16.2 Crore. Minimum Average Annual Turnover is ₹14.50 Crore."},
@@ -210,45 +226,49 @@ def run_compliance_verification(
             fname = s_data["file_name"]
             if fname not in created_docs:
                 d_id = f"synth_{str(uuid.uuid4())[:8]}"
-                d_obj = Document(
-                    id=d_id,
-                    submission_id=submission.id,
-                    file_name=fname,
-                    file_path=f"samples/{fname}",
-                    file_size=1024,
-                    document_type=s_data["doc_type"]
-                )
-                db.add(d_obj)
+                d_obj = {
+                    "id": d_id,
+                    "submission_id": submission["id"],
+                    "file_name": fname,
+                    "file_path": f"https://res.cloudinary.com/bidnexus/docs/{fname}",
+                    "file_size": 1024,
+                    "document_type": s_data["doc_type"],
+                    "uploaded_at": datetime.now(timezone.utc).isoformat()
+                }
+                docs_col.insert_one(d_obj)
                 created_docs[fname] = d_id
             
-            c_obj = DocumentChunk(
-                document_id=created_docs[fname],
-                page_number=s_data["page_number"],
-                section=s_data["section"],
-                chunk_text=s_data["chunk_text"]
-            )
-            db.add(c_obj)
+            c_obj = {
+                "id": str(uuid.uuid4()),
+                "document_id": created_docs[fname],
+                "page_number": s_data["page_number"],
+                "section": s_data["section"],
+                "chunk_text": s_data["chunk_text"]
+            }
+            chunks_col_ref.insert_one(c_obj)
 
-        db.commit()
-        docs = db.query(Document).filter(Document.submission_id == submission.id).all()
-        chunks = db.query(DocumentChunk).join(Document).filter(Document.submission_id == submission.id).all()
+        docs = list(docs_col.find({"submission_id": submission["id"]}))
+        doc_ids = [d["id"] for d in docs]
+        chunks = list(chunks_col_ref.find({"document_id": {"$in": doc_ids}}))
 
+    doc_name_map = {d["id"]: d["file_name"] for d in docs}
     chunk_dicts = [
         {
-            "chunk_text": c.chunk_text,
-            "page_number": c.page_number,
-            "section": c.section,
-            "file_name": c.document.file_name if c.document else "evidence.pdf"
+            "chunk_text": c["chunk_text"],
+            "page_number": c["page_number"],
+            "section": c["section"],
+            "file_name": doc_name_map.get(c.get("document_id"), "evidence.pdf")
         }
         for c in chunks
     ]
 
-    db.query(ComplianceResult).filter(ComplianceResult.submission_id == submission.id).delete()
+    res_col = results_col()
+    res_col.delete_many({"submission_id": submission["id"]})
 
     evaluation_list = compliance_engine.evaluate_submission(
-        requirements=req_dicts,
+        requirements=requirements,
         vendor_chunks=chunk_dicts,
-        vendor_docs=[{"id": d.id, "file_name": d.file_name} for d in docs]
+        vendor_docs=[{"id": d["id"], "file_name": d["file_name"]} for d in docs]
     )
 
     result_objs = []
@@ -259,46 +279,47 @@ def run_compliance_verification(
         if ev["status"] == "COMPLIANT":
             compliant_count += 1
 
-        res_obj = ComplianceResult(
-            submission_id=submission.id,
-            requirement_id=ev["requirement_id"],
-            status=ev["status"],
-            confidence=ev["confidence"],
-            reasoning=ev["reasoning"],
-            evidence_text=ev.get("evidence_text"),
-            source_doc_name=ev.get("source_doc_name"),
-            source_page=ev.get("source_page"),
-            verification_method=ev.get("verification_method", "Hybrid Engine")
-        )
+        res_obj = {
+            "id": str(uuid.uuid4()),
+            "submission_id": submission["id"],
+            "requirement_id": ev["requirement_id"],
+            "status": ev["status"],
+            "confidence": ev["confidence"],
+            "reasoning": ev["reasoning"],
+            "evidence_text": ev.get("evidence_text"),
+            "source_doc_name": ev.get("source_doc_name"),
+            "source_page": ev.get("source_page"),
+            "verification_method": ev.get("verification_method", "Hybrid Engine"),
+            "evaluated_at": datetime.now(timezone.utc).isoformat()
+        }
         result_objs.append(res_obj)
 
-    db.add_all(result_objs)
+    if result_objs:
+        res_col.insert_many(result_objs)
 
     score = round((compliant_count / total_count * 100), 1) if total_count > 0 else 0.0
-    submission.compliance_score = score
-    submission.status = "Evaluated"
-
-    db.commit()
-
-    audit = AuditLog(
-        user_id=current_user.id if current_user else None,
-        action="COMPLIANCE_VERIFIED",
-        entity_type="Submission",
-        entity_id=submission.id,
-        details=f"Evaluated {total_count} requirements for vendor '{vendor.company_name}'. Score: {score}%."
+    submissions.update_one(
+        {"id": submission["id"]},
+        {"$set": {
+            "compliance_score": score,
+            "status": "Evaluated"
+        }}
     )
-    db.add(audit)
-    db.commit()
 
-    try:
-        from app.database.mongodb import sync_all_data_to_mongodb
-        sync_all_data_to_mongodb(db)
-    except Exception:
-        pass
+    audits = audit_logs_col()
+    audits.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": current_user.get("id") if isinstance(current_user, dict) else None,
+        "action": "COMPLIANCE_VERIFIED",
+        "entity_type": "Submission",
+        "entity_id": submission["id"],
+        "details": f"Evaluated {total_count} requirements for vendor '{vendor['company_name']}'. Score: {score}%.",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
 
     return {
-        "submission_id": submission.id,
-        "vendor": vendor.company_name,
+        "submission_id": submission["id"],
+        "vendor": vendor["company_name"],
         "compliance_score": score,
         "total_requirements": total_count,
         "compliant_count": compliant_count,
@@ -312,49 +333,62 @@ def run_compliance_verification(
 def get_compliance_results(
     bid_id: str,
     vendor_id: str,
-    db: Session = Depends(get_db),
     current_user = Depends(get_optional_current_user)
 ):
-    bid = db.query(Bid).filter(
-        (Bid.id == bid_id) | (Bid.bid_number == bid_id) | (Bid.bid_number.contains(bid_id))
-    ).first()
-    resolved_bid_id = bid.id if bid else bid_id
+    bids = bids_col()
+    bid = bids.find_one({
+        "$or": [
+            {"id": bid_id},
+            {"bid_number": bid_id},
+            {"bid_number": {"$regex": bid_id, "$options": "i"}}
+        ]
+    })
+    resolved_bid_id = bid["id"] if bid else bid_id
 
-    submission = db.query(Submission).filter(
-        Submission.bid_id == resolved_bid_id,
-        Submission.vendor_id == vendor_id
-    ).first()
+    submissions = submissions_col()
+    submission = submissions.find_one({
+        "bid_id": resolved_bid_id,
+        "vendor_id": vendor_id
+    })
     if not submission:
-        submission = db.query(Submission).first()
+        submission = submissions.find_one()
     if not submission:
         raise HTTPException(status_code=404, detail="Compliance evaluation not found for this vendor.")
-    return submission
+
+    sub_dict = dict(submission)
+    res_col = results_col()
+    sub_dict["compliance_results"] = list(res_col.find({"submission_id": submission["id"]}))
+    return sub_dict
 
 
 @router.api_route("/submissions/{submission_id}/submit", methods=["GET", "POST"])
 @router.api_route("/{submission_id}/submit-to-evaluator", methods=["GET", "POST"])
 def submit_to_evaluator(
     submission_id: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UserSession = Depends(get_current_user)
 ):
-    submission = db.query(Submission).filter(Submission.id == submission_id).first()
+    submissions = submissions_col()
+    submission = submissions.find_one({"id": submission_id})
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found.")
 
-    submission.status = "SUBMITTED_TO_EVALUATOR"
-    db.commit()
-
-    audit = AuditLog(
-        user_id=current_user.id,
-        action="SUBMITTED_TO_EVALUATOR",
-        entity_type="Submission",
-        entity_id=submission.id,
-        details=f"Compliance report for submission '{submission.id}' submitted to Procurement Evaluator by {current_user.email}."
+    submissions.update_one(
+        {"id": submission_id},
+        {"$set": {"status": "SUBMITTED_TO_EVALUATOR"}}
     )
-    db.add(audit)
-    db.commit()
+
+    audits = audit_logs_col()
+    audits.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": current_user.get("id"),
+        "action": "SUBMITTED_TO_EVALUATOR",
+        "entity_type": "Submission",
+        "entity_id": submission_id,
+        "details": f"Compliance report for submission '{submission_id}' submitted to Procurement Evaluator by {current_user.get('email')}.",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
 
     return {"message": "Successfully submitted compliance report to Procurement Evaluator.", "status": "SUBMITTED_TO_EVALUATOR"}
+
 
 

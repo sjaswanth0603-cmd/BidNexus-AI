@@ -1,34 +1,38 @@
 import os
 import uuid
+from datetime import datetime, timezone
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
-from sqlalchemy.orm import Session
 
-from app.config import settings
-from app.database.session import get_db
-from app.models.models import Bid, Vendor, Submission, Document, DocumentChunk, User, AuditLog
+from app.database.mongodb import (
+    vendors_col, blacklist_col, bids_col, submissions_col,
+    documents_col, chunks_col, audit_logs_col
+)
 from app.schemas.schemas import VendorCreate, VendorOut, SubmissionOut
-from app.auth.security import get_current_user
-from app.document_processing.extractor import process_document_file
+from app.auth.security import get_current_user, UserSession
+from app.document_processing.extractor import process_document_bytes, upload_file_to_cloudinary
 
 router = APIRouter(prefix="/vendors", tags=["Vendors"])
 
 @router.post("", response_model=VendorOut, status_code=status.HTTP_201_CREATED)
-def create_vendor(vendor_in: VendorCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    vendor = Vendor(
-        company_name=vendor_in.company_name,
-        reg_number=vendor_in.reg_number,
-        contact_email=vendor_in.contact_email,
-        phone=vendor_in.phone
-    )
-    db.add(vendor)
-    db.commit()
-    db.refresh(vendor)
+def create_vendor(vendor_in: VendorCreate, current_user: UserSession = Depends(get_current_user)):
+    vendors = vendors_col()
+    vendor_id = str(uuid.uuid4())
+    vendor = {
+        "id": vendor_id,
+        "company_name": vendor_in.company_name,
+        "reg_number": vendor_in.reg_number,
+        "contact_email": vendor_in.contact_email,
+        "phone": vendor_in.phone,
+        "is_blacklisted": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    vendors.insert_one(vendor)
     return vendor
 
 
 @router.get("/govt-adapters/status")
-def get_govt_adapter_status(current_user: User = Depends(get_current_user)):
+def get_govt_adapter_status(current_user: UserSession = Depends(get_current_user)):
     return {
         "mode": "Live Production Sandbox Gateway",
         "total_adapters": 12,
@@ -50,96 +54,104 @@ def get_govt_adapter_status(current_user: User = Depends(get_current_user)):
 
 
 @router.get("/blacklist/all")
-def list_blacklisted_suppliers(db: Session = Depends(get_db)):
+def list_blacklisted_suppliers():
     """
     Returns list of all active debarred / blacklisted suppliers across GeM and Govt Procurement.
     """
-    from app.models.models import BlacklistRecord
-    records = db.query(BlacklistRecord).all()
+    bl = blacklist_col()
+    records = bl.find()
     out = []
     for r in records:
         out.append({
-            "id": r.id,
-            "company_name": r.company_name,
-            "reg_number": r.reg_number,
-            "gstin": r.gstin,
-            "reason": r.reason,
-            "debarment_agency": r.debarment_agency,
-            "debarred_until": r.debarred_until,
-            "created_at": str(r.created_at) if r.created_at else None
+            "id": r.get("id"),
+            "company_name": r.get("company_name"),
+            "reg_number": r.get("reg_number"),
+            "gstin": r.get("gstin"),
+            "reason": r.get("reason"),
+            "debarment_agency": r.get("debarment_agency"),
+            "debarred_until": r.get("debarred_until"),
+            "created_at": r.get("created_at")
         })
     return {"status": "success", "count": len(out), "blacklisted_suppliers": out}
 
 
 @router.post("/{vendor_id}/blacklist")
-def blacklist_vendor(vendor_id: str, reason: str = "Deburred for procurement non-compliance", db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def blacklist_vendor(
+    vendor_id: str,
+    reason: str = "Deburred for procurement non-compliance",
+    current_user: UserSession = Depends(get_current_user)
+):
     """
-    Blacklist a vendor and trigger real-time MongoDB Atlas sync.
+    Blacklist a vendor in MongoDB Atlas.
     """
-    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    vendors = vendors_col()
+    vendor = vendors.find_one({"id": vendor_id})
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor record not found.")
 
-    vendor.is_blacklisted = True
-    vendor.blacklist_reason = reason
-    vendor.blacklisted_by = current_user.email
-    db.commit()
-
-    audit = AuditLog(
-        user_id=current_user.id,
-        action="VENDOR_BLACKLISTED",
-        entity_type="Vendor",
-        entity_id=vendor.id,
-        details=f"Vendor '{vendor.company_name}' blacklisted by {current_user.email}. Reason: {reason}"
+    vendors.update_one(
+        {"id": vendor_id},
+        {"$set": {
+            "is_blacklisted": True,
+            "blacklist_reason": reason,
+            "blacklisted_by": current_user.get("email")
+        }}
     )
-    db.add(audit)
-    db.commit()
 
-    try:
-        from app.database.mongodb import sync_all_data_to_mongodb
-        sync_all_data_to_mongodb(db)
-    except Exception:
-        pass
+    audits = audit_logs_col()
+    audits.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": current_user.get("id"),
+        "action": "VENDOR_BLACKLISTED",
+        "entity_type": "Vendor",
+        "entity_id": vendor_id,
+        "details": f"Vendor '{vendor.get('company_name')}' blacklisted by {current_user.get('email')}. Reason: {reason}",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
 
-    return {"status": "success", "message": f"Vendor '{vendor.company_name}' has been blacklisted successfully."}
+    return {"status": "success", "message": f"Vendor '{vendor.get('company_name')}' has been blacklisted successfully."}
 
 
 @router.delete("/{vendor_id}/blacklist")
-def remove_vendor_from_blacklist(vendor_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def remove_vendor_from_blacklist(
+    vendor_id: str,
+    current_user: UserSession = Depends(get_current_user)
+):
     """
-    Remove a vendor from the blacklist and sync to MongoDB Atlas.
+    Remove a vendor from the blacklist in MongoDB Atlas.
     """
-    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    vendors = vendors_col()
+    vendor = vendors.find_one({"id": vendor_id})
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor record not found.")
 
-    vendor.is_blacklisted = False
-    vendor.blacklist_reason = None
-    vendor.blacklisted_by = None
-    db.commit()
-
-    audit = AuditLog(
-        user_id=current_user.id,
-        action="VENDOR_REMOVED_FROM_BLACKLIST",
-        entity_type="Vendor",
-        entity_id=vendor.id,
-        details=f"Vendor '{vendor.company_name}' removed from blacklist by {current_user.email}."
+    vendors.update_one(
+        {"id": vendor_id},
+        {"$set": {
+            "is_blacklisted": False,
+            "blacklist_reason": None,
+            "blacklisted_by": None
+        }}
     )
-    db.add(audit)
-    db.commit()
 
-    try:
-        from app.database.mongodb import sync_all_data_to_mongodb
-        sync_all_data_to_mongodb(db)
-    except Exception:
-        pass
+    audits = audit_logs_col()
+    audits.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": current_user.get("id"),
+        "action": "VENDOR_REMOVED_FROM_BLACKLIST",
+        "entity_type": "Vendor",
+        "entity_id": vendor_id,
+        "details": f"Vendor '{vendor.get('company_name')}' removed from blacklist by {current_user.get('email')}.",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
 
-    return {"status": "success", "message": f"Vendor '{vendor.company_name}' has been removed from blacklist."}
+    return {"status": "success", "message": f"Vendor '{vendor.get('company_name')}' has been removed from blacklist."}
 
 
 @router.get("/{vendor_id}", response_model=VendorOut)
-def get_vendor(vendor_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+def get_vendor(vendor_id: str, current_user: UserSession = Depends(get_current_user)):
+    vendors = vendors_col()
+    vendor = vendors.find_one({"id": vendor_id})
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found.")
     return vendor
@@ -150,49 +162,59 @@ async def upload_vendor_documents(
     vendor_id: str,
     bid_id: str,
     files: List[UploadFile] = File(...),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UserSession = Depends(get_current_user)
 ):
-    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    vendors = vendors_col()
+    vendor = vendors.find_one({"id": vendor_id})
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found.")
 
-    bid = db.query(Bid).filter(
-        (Bid.id == bid_id) | (Bid.bid_number == bid_id) | (Bid.bid_number.contains(bid_id))
-    ).first()
+    bids = bids_col()
+    bid = bids.find_one({
+        "$or": [
+            {"id": bid_id},
+            {"bid_number": bid_id},
+            {"bid_number": {"$regex": bid_id, "$options": "i"}}
+        ]
+    })
     if not bid:
-        bid = db.query(Bid).first()
+        bid = bids.find_one()
     if not bid:
-        bid = Bid(
-            id=str(uuid.uuid4()),
-            bid_number=f"GEM/2026/B/{bid_id}" if not bid_id.startswith("GEM") else bid_id,
-            title=f"Procurement Tender {bid_id}",
-            department="National Informatics Centre",
-            created_by=current_user.id,
-            status="Open"
-        )
-        db.add(bid)
-        db.commit()
-        db.refresh(bid)
+        new_bid_id = str(uuid.uuid4())
+        bid = {
+            "id": new_bid_id,
+            "bid_number": f"GEM/2026/B/{bid_id}" if not bid_id.startswith("GEM") else bid_id,
+            "title": f"Procurement Tender {bid_id}",
+            "department": "National Informatics Centre",
+            "created_by": current_user.get("id"),
+            "status": "Open",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        bids.insert_one(bid)
 
-    resolved_bid_id = bid.id
+    resolved_bid_id = bid["id"]
 
     # Find or create submission record
-    submission = db.query(Submission).filter(
-        Submission.bid_id == resolved_bid_id,
-        Submission.vendor_id == vendor_id
-    ).first()
+    submissions = submissions_col()
+    submission = submissions.find_one({
+        "bid_id": resolved_bid_id,
+        "vendor_id": vendor_id
+    })
 
     if not submission:
-        submission = Submission(
-            bid_id=resolved_bid_id,
-            vendor_id=vendor_id,
-            status="Pending"
-        )
-        db.add(submission)
-        db.commit()
-        db.refresh(submission)
+        sub_id = str(uuid.uuid4())
+        submission = {
+            "id": sub_id,
+            "bid_id": resolved_bid_id,
+            "vendor_id": vendor_id,
+            "status": "Pending",
+            "compliance_score": 0.0,
+            "submitted_at": datetime.now(timezone.utc).isoformat()
+        }
+        submissions.insert_one(submission)
 
+    docs = documents_col()
+    chunks = chunks_col()
     uploaded_summary = []
 
     for file in files:
@@ -201,12 +223,10 @@ async def upload_vendor_documents(
             continue
 
         file_id = str(uuid.uuid4())
-        saved_name = f"vendor_{vendor_id}_{file_id}_{file.filename}"
-        file_path = os.path.join(settings.UPLOAD_DIR, saved_name)
-
         content = await file.read()
-        with open(file_path, "wb") as f:
-            f.write(content)
+
+        # Upload to Cloudinary
+        cloud_url = upload_file_to_cloudinary(content, file.filename)
 
         # Categorize doc type automatically based on name
         doc_type = "Other"
@@ -219,50 +239,53 @@ async def upload_vendor_documents(
         elif "datasheet" in fn_lower or "spec" in fn_lower: doc_type = "Technical Datasheet"
         elif "warranty" in fn_lower: doc_type = "Warranty Document"
 
-        doc_obj = Document(
-            id=file_id,
-            submission_id=submission.id,
-            file_name=file.filename,
-            file_path=file_path,
-            file_size=len(content),
-            document_type=doc_type
-        )
-        db.add(doc_obj)
-        db.commit()
+        doc_obj = {
+            "id": file_id,
+            "submission_id": submission["id"],
+            "file_name": file.filename,
+            "file_path": cloud_url,
+            "file_size": len(content),
+            "document_type": doc_type,
+            "uploaded_at": datetime.now(timezone.utc).isoformat()
+        }
+        docs.insert_one(doc_obj)
 
-        # Chunk text
-        chunks_data = process_document_file(file_path, doc_obj.id, file.filename)
+        # Chunk text in memory
+        chunks_data = process_document_bytes(content, file_id, file.filename)
         chunk_objs = []
         for c in chunks_data:
-            chunk_objs.append(DocumentChunk(
-                document_id=doc_obj.id,
-                page_number=c["page_number"],
-                section=c.get("section", f"Page {c['page_number']}"),
-                chunk_text=c["chunk_text"]
-            ))
-        db.add_all(chunk_objs)
-        db.commit()
+            chunk_objs.append({
+                "id": str(uuid.uuid4()),
+                "document_id": file_id,
+                "page_number": c["page_number"],
+                "section": c.get("section", f"Page {c['page_number']}"),
+                "chunk_text": c["chunk_text"]
+            })
+        if chunk_objs:
+            chunks.insert_many(chunk_objs)
 
         uploaded_summary.append({
             "id": file_id,
             "file_name": file.filename,
+            "file_url": cloud_url,
             "document_type": doc_type,
             "chunks": len(chunks_data)
         })
 
-    audit = AuditLog(
-        user_id=current_user.id,
-        action="VENDOR_DOCUMENTS_UPLOADED",
-        entity_type="Submission",
-        entity_id=submission.id,
-        details=f"Uploaded {len(uploaded_summary)} evidence files for vendor '{vendor.company_name}'."
-    )
-    db.add(audit)
-    db.commit()
+    audits = audit_logs_col()
+    audits.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": current_user.get("id"),
+        "action": "VENDOR_DOCUMENTS_UPLOADED",
+        "entity_type": "Submission",
+        "entity_id": submission["id"],
+        "details": f"Uploaded {len(uploaded_summary)} evidence files for vendor '{vendor.get('company_name')}'.",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
 
     return {
-        "submission_id": submission.id,
-        "vendor_id": vendor.id,
+        "submission_id": submission["id"],
+        "vendor_id": vendor["id"],
         "bid_id": bid_id,
         "files_uploaded": len(uploaded_summary),
         "documents": uploaded_summary
@@ -270,24 +293,26 @@ async def upload_vendor_documents(
 
 
 @router.get("/submissions/{submission_id}", response_model=SubmissionOut)
-def get_submission_detail(submission_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    submission = db.query(Submission).filter(Submission.id == submission_id).first()
+def get_submission_detail(submission_id: str, current_user: UserSession = Depends(get_current_user)):
+    submissions = submissions_col()
+    submission = submissions.find_one({"id": submission_id})
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found.")
     return submission
 
 
 @router.get("/{vendor_id}/risk-radar")
-def get_vendor_risk_radar(vendor_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+def get_vendor_risk_radar(vendor_id: str, current_user: UserSession = Depends(get_current_user)):
+    vendors = vendors_col()
+    vendor = vendors.find_one({"id": vendor_id})
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found.")
 
-    vname = vendor.company_name.lower()
+    vname = vendor.get("company_name", "").lower()
     if "techcorp" in vname or "l1" in vname:
         return {
-            "vendor_id": vendor.id,
-            "company_name": vendor.company_name,
+            "vendor_id": vendor["id"],
+            "company_name": vendor["company_name"],
             "overall_risk": "LOW",
             "compliance_score": 100.0,
             "entity_match_ratio": 1.0,
@@ -302,8 +327,8 @@ def get_vendor_risk_radar(vendor_id: str, db: Session = Depends(get_db), current
         }
     elif "infrasys" in vname:
         return {
-            "vendor_id": vendor.id,
-            "company_name": vendor.company_name,
+            "vendor_id": vendor["id"],
+            "company_name": vendor["company_name"],
             "overall_risk": "HIGH",
             "compliance_score": 40.0,
             "entity_match_ratio": 0.88,
@@ -322,8 +347,8 @@ def get_vendor_risk_radar(vendor_id: str, db: Session = Depends(get_db), current
         }
     elif "apex" in vname:
         return {
-            "vendor_id": vendor.id,
-            "company_name": vendor.company_name,
+            "vendor_id": vendor["id"],
+            "company_name": vendor["company_name"],
             "overall_risk": "MEDIUM",
             "compliance_score": 80.0,
             "entity_match_ratio": 0.94,
@@ -341,8 +366,8 @@ def get_vendor_risk_radar(vendor_id: str, db: Session = Depends(get_db), current
         }
     else:
         return {
-            "vendor_id": vendor.id,
-            "company_name": vendor.company_name,
+            "vendor_id": vendor["id"],
+            "company_name": vendor["company_name"],
             "overall_risk": "LOW",
             "compliance_score": 90.0,
             "entity_match_ratio": 0.98,
@@ -355,3 +380,4 @@ def get_vendor_risk_radar(vendor_id: str, db: Session = Depends(get_db), current
             },
             "anomalies_detected": []
         }
+

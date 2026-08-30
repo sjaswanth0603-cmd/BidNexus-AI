@@ -1,48 +1,49 @@
 import os
+import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.database.session import engine, Base, SessionLocal
 from app.database.seed import seed_database
-
+from app.database.mongodb import check_mongodb_connection
 from app.api import auth, bids, vendors, compliance, reviews, reports, assistant, audit, mongodb
-from app.database.mongodb import sync_all_data_to_mongodb
 
-# Initialize Database tables
-Base.metadata.create_all(bind=engine)
+logger = logging.getLogger("bidnexus")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db: Session = SessionLocal()
+    # Auto-seed MongoDB Atlas on serverless startup if empty
     try:
-        seed_database(db)
-        sync_all_data_to_mongodb(db)
-    finally:
-        db.close()
+        seed_database()
+    except Exception as e:
+        logger.warning(f"Startup seed skipped or deferred: {e}")
     yield
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="AI-Powered Integrated Bid Compliance Verification Platform for GeM Procurement (SIH26100)",
+    description="AI-Powered Integrated Bid Compliance Verification Platform for GeM Procurement",
     version="1.0.0",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     redirect_slashes=False,
     lifespan=lifespan
 )
 
-# CORS Configuration
+# CORS Configuration allowing Vercel domains, local dev, and custom subdomains
+origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
+if "*" not in origins:
+    origins.append("*")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include Routers
+# Include Routers on /api/v1
 app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(bids.router, prefix=settings.API_V1_STR)
 app.include_router(vendors.router, prefix=settings.API_V1_STR)
@@ -53,11 +54,28 @@ app.include_router(assistant.router, prefix=settings.API_V1_STR)
 app.include_router(audit.router, prefix=settings.API_V1_STR)
 app.include_router(mongodb.router, prefix=settings.API_V1_STR)
 
+# Also mount on /api for full reverse compatibility
+app.include_router(auth.router, prefix="/api")
+app.include_router(bids.router, prefix="/api")
+app.include_router(vendors.router, prefix="/api")
+app.include_router(compliance.router, prefix="/api")
+app.include_router(reviews.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
+app.include_router(assistant.router, prefix="/api")
+app.include_router(audit.router, prefix="/api")
+app.include_router(mongodb.router, prefix="/api")
+
 @app.get("/")
-def root():
+@app.get("/health")
+@app.get("/api/health")
+def health_check():
+    db_status = check_mongodb_connection()
     return {
         "platform": settings.PROJECT_NAME,
         "status": "Online",
         "version": "1.0.0",
-        "docs_url": "/docs"
+        "database": db_status.get("status", "connected"),
+        "mongodb_connected": db_status.get("status") == "connected",
+        "docs_url": f"{settings.API_V1_STR}/docs"
     }
+
