@@ -28,7 +28,7 @@ export const NewCheckWizard: React.FC = () => {
   const [searchParams] = useSearchParams();
   
   const rawId = routeBidId || searchParams.get('tenderId') || searchParams.get('tender') || searchParams.get('bid') || '983373';
-  const initialBidId = rawId.replace(/^(APEP-2026-WRD-|GEM-2026-B-)/i, '');
+  const initialBidId = rawId.replace(/^(APEP[\/-]2026[\/-]WRD[\/-]|GEM[\/-]2026[\/-]B[\/-])/i, '').trim();
 
   const [step, setStep] = useState<number>(3); // Step 3 = 2-File Comparison Setup, Step 4 = Comparison Results
   const [bidId, setBidId] = useState<string | null>(initialBidId);

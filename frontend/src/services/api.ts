@@ -61,7 +61,8 @@ export const bidService = {
     return res.data as Bid[];
   },
   getBidDetail: async (id: string) => {
-    const res = await api.get(`/bids/${id}`);
+    const bId = cleanParam(id);
+    const res = await api.get(`/bids/${bId}`);
     return res.data as Bid & { requirements: Requirement[] };
   },
   createBid: async (data: any) => {
@@ -69,31 +70,39 @@ export const bidService = {
     return res.data as Bid;
   },
   uploadBidDocument: async (bidId: string, file: File) => {
+    const bId = cleanParam(bidId);
     const formData = new FormData();
     formData.append('file', file);
-    const res = await api.post(`/bids/${bidId}/documents`, formData, {
+    const res = await api.post(`/bids/${bId}/documents`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return res.data;
   },
   extractRequirements: async (bidId: string) => {
-    const res = await api.post(`/bids/${bidId}/extract-requirements`);
+    const bId = cleanParam(bidId);
+    const res = await api.post(`/bids/${bId}/extract-requirements`);
     return res.data as Requirement[];
   },
   listRequirements: async (bidId: string) => {
-    const res = await api.get(`/bids/${bidId}/requirements`);
+    const bId = cleanParam(bidId);
+    const res = await api.get(`/bids/${bId}/requirements`);
     return res.data as Requirement[];
   },
   addRequirement: async (bidId: string, reqData: any) => {
-    const res = await api.post(`/bids/${bidId}/requirements`, reqData);
+    const bId = cleanParam(bidId);
+    const res = await api.post(`/bids/${bId}/requirements`, reqData);
     return res.data as Requirement;
   },
   updateRequirement: async (bidId: string, reqId: string, reqData: any) => {
-    const res = await api.put(`/bids/${bidId}/requirements/${reqId}`, reqData);
+    const bId = cleanParam(bidId);
+    const rId = encodeURIComponent(reqId);
+    const res = await api.put(`/bids/${bId}/requirements/${rId}`, reqData);
     return res.data as Requirement;
   },
   deleteRequirement: async (bidId: string, reqId: string) => {
-    const res = await api.delete(`/bids/${bidId}/requirements/${reqId}`);
+    const bId = cleanParam(bidId);
+    const rId = encodeURIComponent(reqId);
+    const res = await api.delete(`/bids/${bId}/requirements/${rId}`);
     return res.data;
   },
 };
@@ -141,17 +150,24 @@ export const vendorService = {
   },
 };
 
+const cleanParam = (p: string) => encodeURIComponent(p.replace(/^(APEP[\/-]2026[\/-]WRD[\/-]|GEM[\/-]2026[\/-]B[\/-])/i, '').trim());
+
 export const complianceService = {
   runVerification: async (bidId: string, vendorId: string) => {
-    const res = await api.post(`/compliance/${bidId}/${vendorId}/verify`);
+    const bId = cleanParam(bidId);
+    const vId = encodeURIComponent(vendorId);
+    const res = await api.post(`/compliance/${bId}/${vId}/verify`);
     return res.data;
   },
   getResults: async (bidId: string, vendorId: string) => {
-    const res = await api.get(`/compliance/${bidId}/${vendorId}`);
+    const bId = cleanParam(bidId);
+    const vId = encodeURIComponent(vendorId);
+    const res = await api.get(`/compliance/${bId}/${vId}`);
     return res.data as Submission;
   },
   compareVendors: async (bidId: string) => {
-    const res = await api.get(`/compliance/${bidId}/compare`);
+    const bId = cleanParam(bidId);
+    const res = await api.get(`/compliance/${bId}/compare`);
     return res.data;
   },
   overrideResult: async (reviewData: { result_id: string; final_status: string; reason: string }) => {
@@ -159,7 +175,8 @@ export const complianceService = {
     return res.data;
   },
   submitToEvaluator: async (submissionId: string) => {
-    const res = await api.post(`/compliance/submissions/${submissionId}/submit`);
+    const sId = encodeURIComponent(submissionId);
+    const res = await api.post(`/compliance/submissions/${sId}/submit`);
     return res.data;
   },
 };
