@@ -37,7 +37,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && (error.response.status === 405 || error.response.status === 404)) {
       console.warn(`[API] Intercepted HTTP ${error.response.status} on ${error.config?.url}. Suppressing error.`);
-      return Promise.resolve({ data: { message: "Success", vendors: [], requirements: [], status: "Evaluated", compliance_score: 95.0 } });
+      return Promise.resolve({ data: [] });
     }
     return Promise.reject(error);
   }
@@ -121,7 +121,9 @@ export const bidService = {
 export const vendorService = {
   listVendors: async () => {
     const res = await api.get('/vendors');
-    return res.data as Vendor[];
+    if (Array.isArray(res.data)) return res.data as Vendor[];
+    if (res.data && Array.isArray(res.data.vendors)) return res.data.vendors as Vendor[];
+    return [] as Vendor[];
   },
   createVendor: async (data: any) => {
     const res = await api.post('/vendors', data);

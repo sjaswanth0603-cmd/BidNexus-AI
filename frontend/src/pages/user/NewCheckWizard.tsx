@@ -155,11 +155,14 @@ export const NewCheckWizard: React.FC = () => {
 
       // 2. Setup Vendor / File 2 (Bidder Submission PDF)
       let targetVendorId: string | null = null;
-      const existingVendors = await vendorService.listVendors();
-      const matched = existingVendors.find(
+      const rawVendors = await vendorService.listVendors();
+      const vendorList = Array.isArray(rawVendors) ? rawVendors : [];
+      const matched = vendorList.find(
         (v) =>
-          v.company_name.toLowerCase().includes(vendorName.toLowerCase()) ||
-          vendorName.toLowerCase().includes(v.company_name.toLowerCase())
+          v?.company_name && (
+            v.company_name.toLowerCase().includes(vendorName.toLowerCase()) ||
+            vendorName.toLowerCase().includes(v.company_name.toLowerCase())
+          )
       );
 
       if (matched && vendorFiles.length === 0) {
