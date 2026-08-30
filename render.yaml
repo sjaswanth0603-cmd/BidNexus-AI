@@ -1,5 +1,5 @@
 services:
-  # 1. FastAPI Backend Web Service
+  # FastAPI Backend Web Service
   - type: web
     name: bidnexus-ai-backend
     env: python
@@ -7,28 +7,25 @@ services:
     plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
-    startCommand: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: PROJECT_NAME
+        value: AI-Powered Integrated Bid Compliance Verification Platform
+      - key: API_V1_STR
+        value: /api/v1
       - key: SECRET_KEY
-        value: gem_bid_nexus_super_secret_key_sih26100_2026_production_key
-      - key: MONGODB_URL
-        value: mongodb://admin:admin@ac-sz5cgvx-shard-00-00.dpirl2u.mongodb.net:27017,ac-sz5cgvx-shard-00-01.dpirl2u.mongodb.net:27017,ac-sz5cgvx-shard-00-02.dpirl2u.mongodb.net:27017/?ssl=true&replicaSet=atlas-3ht3ip-shard-0&authSource=admin&appName=Cluster0
+        generateValue: true
       - key: MONGODB_DB_NAME
         value: bidnexus_ai
       - key: LLM_PROVIDER
-        value: auto
-
-  # 2. React Vite Frontend Static Site
-  - type: web
-    name: bidnexus-ai-frontend
-    env: static
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://bidnexus-ai-backend.onrender.com
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+        value: gemini
+      - key: MONGODB_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

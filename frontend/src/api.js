@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-// Java Backend REST API Base URL
-export const API_BASE_URL = 'http://localhost:8080/api';
+// REST API Base URL (Configurable via VITE_API_URL)
+export const API_BASE_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api` 
+  : '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
