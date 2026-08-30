@@ -92,12 +92,12 @@ export const bidService = {
   extractRequirements: async (bidId: string) => {
     const bId = cleanParam(bidId);
     const res = await api.post(`/bids/${bId}/extract-requirements`);
-    return res.data as Requirement[];
+    return Array.isArray(res.data) ? (res.data as Requirement[]) : [];
   },
   listRequirements: async (bidId: string) => {
     const bId = cleanParam(bidId);
     const res = await api.get(`/bids/${bId}/requirements`);
-    return res.data as Requirement[];
+    return Array.isArray(res.data) ? (res.data as Requirement[]) : [];
   },
   addRequirement: async (bidId: string, reqData: any) => {
     const bId = cleanParam(bidId);

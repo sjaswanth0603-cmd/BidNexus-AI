@@ -276,10 +276,11 @@ export const NewCheckWizard: React.FC = () => {
   const getSuitabilityVerdict = () => {
     if (!submission) return null;
 
-    const hasMandatoryFailure = submission.compliance_results.some(
+    const results = Array.isArray(submission.compliance_results) ? submission.compliance_results : [];
+    const hasMandatoryFailure = results.some(
       (r) => r.requirement?.mandatory && r.status === 'NON_COMPLIANT'
     );
-    const score = submission.compliance_score;
+    const score = submission.compliance_score || 0;
 
     if (score >= 90 && !hasMandatoryFailure) {
       return {
@@ -452,7 +453,7 @@ export const NewCheckWizard: React.FC = () => {
                       {tenderTitle}
                     </p>
                     <div className="flex flex-wrap gap-1 pt-1">
-                      {requirements.slice(0, 4).map((r) => (
+                      {(Array.isArray(requirements) ? requirements : []).slice(0, 4).map((r) => (
                         <span key={r.id} className="text-[10px] font-mono bg-white text-slate-700 px-2 py-0.5 rounded border border-slate-200 font-bold">
                           {r.category}: {r.operator} {r.value} {r.unit}
                         </span>
@@ -816,7 +817,7 @@ export const NewCheckWizard: React.FC = () => {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-200 font-medium">
-                            {submission.compliance_results
+                            {(Array.isArray(submission?.compliance_results) ? submission.compliance_results : [])
                               .filter((r) => resultFilter === 'ALL' || r.status === resultFilter)
                               .map((res) => (
                                 <tr

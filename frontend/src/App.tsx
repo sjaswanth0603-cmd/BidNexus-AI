@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 import { HomePage } from './pages/HomePage';
 import { LandingPage } from './pages/LandingPage';
@@ -198,7 +199,9 @@ export const AppContent: React.FC = () => {
         path="/test-page"
         element={
           <ProtectedRoute>
-            <NewCheckWizard />
+            <ErrorBoundary>
+              <NewCheckWizard />
+            </ErrorBoundary>
           </ProtectedRoute>
         }
       />
@@ -211,13 +214,15 @@ export const AppContent: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 
