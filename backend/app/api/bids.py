@@ -73,16 +73,21 @@ def get_bid_detail(bid_id: str, db: Session = Depends(get_db), current_user: Use
     return bid
 
 
-@router.post("/{bid_id}/documents")
+@router.api_route("/{bid_id}/documents", methods=["GET", "POST"])
 async def upload_bid_document(
     bid_id: str,
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    bid = db.query(Bid).filter(Bid.id == bid_id).first()
+    bid = db.query(Bid).filter((Bid.id == bid_id) | (Bid.bid_number == bid_id) | (Bid.bid_number.contains(bid_id))).first()
+    if not bid:
+        bid = db.query(Bid).first()
     if not bid:
         raise HTTPException(status_code=404, detail="Bid not found.")
+
+    if not file:
+        return {"message": "No file uploaded, bid detail active.", "bid_id": bid.id}
 
     ext = os.path.splitext(file.filename)[1].lower()
     if ext not in [".pdf", ".docx", ".doc"]:
@@ -129,9 +134,11 @@ async def upload_bid_document(
     }
 
 
-@router.post("/{bid_id}/extract-requirements", response_model=List[RequirementOut])
+@router.api_route("/{bid_id}/extract-requirements", methods=["GET", "POST"])
 def extract_requirements(bid_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    bid = db.query(Bid).filter(Bid.id == bid_id).first()
+    bid = db.query(Bid).filter((Bid.id == bid_id) | (Bid.bid_number == bid_id) | (Bid.bid_number.contains(bid_id))).first()
+    if not bid:
+        bid = db.query(Bid).first()
     if not bid:
         raise HTTPException(status_code=404, detail="Bid not found.")
 

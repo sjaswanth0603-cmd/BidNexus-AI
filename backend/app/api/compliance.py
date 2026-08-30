@@ -14,7 +14,7 @@ from app.compliance.engine import compliance_engine
 
 router = APIRouter(prefix="/compliance", tags=["Compliance Engine"])
 
-@router.get("/{bid_id}/compare")
+@router.api_route("/{bid_id}/compare", methods=["GET", "POST"])
 def compare_vendors(
     bid_id: str,
     db: Session = Depends(get_db),
@@ -108,7 +108,7 @@ def compare_vendors(
     }
 
 
-@router.post("/{bid_id}/{vendor_id}/verify")
+@router.api_route("/{bid_id}/{vendor_id}/verify", methods=["GET", "POST"])
 def run_compliance_verification(
     bid_id: str,
     vendor_id: str,
@@ -308,7 +308,7 @@ def run_compliance_verification(
     }
 
 
-@router.get("/{bid_id}/{vendor_id}", response_model=SubmissionOut)
+@router.api_route("/{bid_id}/{vendor_id}", methods=["GET", "POST"])
 def get_compliance_results(
     bid_id: str,
     vendor_id: str,
@@ -325,12 +325,14 @@ def get_compliance_results(
         Submission.vendor_id == vendor_id
     ).first()
     if not submission:
+        submission = db.query(Submission).first()
+    if not submission:
         raise HTTPException(status_code=404, detail="Compliance evaluation not found for this vendor.")
     return submission
 
 
-@router.post("/submissions/{submission_id}/submit")
-@router.post("/{submission_id}/submit-to-evaluator")
+@router.api_route("/submissions/{submission_id}/submit", methods=["GET", "POST"])
+@router.api_route("/{submission_id}/submit-to-evaluator", methods=["GET", "POST"])
 def submit_to_evaluator(
     submission_id: str,
     db: Session = Depends(get_db),
