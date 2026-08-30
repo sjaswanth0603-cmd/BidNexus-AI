@@ -23,3 +23,10 @@ __pycache__
 # Frontend source (only frontend/dist is needed for static serving)
 frontend/src
 frontend/public
+
+# Local test uploads and binaries
+backend/uploads
+backend/uploads/**
+*.pdf
+*.docx
+api/app/uploads
