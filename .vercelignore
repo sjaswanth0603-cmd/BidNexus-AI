@@ -1,0 +1,25 @@
+# Dependencies and node modules
+node_modules
+frontend/node_modules
+**/node_modules
+
+# Non-production directories
+java-backend
+python-ai-service
+scratch
+.github
+tests
+docs
+
+# Source and build cache
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+*.log
+
+# Frontend source (only frontend/dist is needed for static serving)
+frontend/src
+frontend/public
