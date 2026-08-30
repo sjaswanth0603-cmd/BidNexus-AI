@@ -65,6 +65,12 @@ app.include_router(assistant.router, prefix="/api")
 app.include_router(audit.router, prefix="/api")
 app.include_router(mongodb.router, prefix="/api")
 
+# Run automatic seeding on startup
+try:
+    seed_database()
+except Exception as e:
+    logger.warning(f"Initial seed notice: {e}")
+
 @app.get("/")
 @app.get("/health")
 @app.get("/api/health")

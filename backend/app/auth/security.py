@@ -40,22 +40,9 @@ def get_password_hash(password: str) -> str:
 
 def validate_password_strength(password: str) -> bool:
     """
-    Password requirements:
-    - Minimum 8 characters
-    - At least one uppercase letter
-    - At least one lowercase letter
-    - At least one number
-    - At least one special character
+    Validates that password has at least 6 characters.
     """
-    if len(password) < 8:
-        return False
-    if not re.search(r"[A-Z]", password):
-        return False
-    if not re.search(r"[a-z]", password):
-        return False
-    if not re.search(r"\d", password):
-        return False
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+    if not password or len(password.strip()) < 6:
         return False
     return True
 

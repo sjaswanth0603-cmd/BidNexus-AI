@@ -25,12 +25,12 @@ def seed_database(db=None):
         results = results_col()
         audits = audit_logs_col()
 
-        # Check if already seeded
-        if users.count_documents({"email": "user@example.com"}) > 0:
-            logger.info("MongoDB Atlas already contains seed data. Skipping initialization.")
+        # Check if already seeded with bids
+        if bids.count_documents() > 0:
+            logger.info("Database already contains seed tender data. Skipping initialization.")
             return {"status": "already_seeded"}
 
-        logger.info("Seeding initial AP e-Procurement and GeM data into MongoDB Atlas...")
+        logger.info("Seeding initial AP e-Procurement and GeM data into Database...")
 
         # 1. Seed Blacklist Records
         bl_records = [

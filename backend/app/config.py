@@ -8,9 +8,12 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
     # MongoDB Atlas Settings
-    MONGODB_URL: str = os.getenv(
-        "MONGODB_URL",
-        "mongodb+srv://admin:admin@cluster0.mongodb.net/?retryWrites=true&w=majority"
+    MONGODB_URL: str = (
+        os.getenv("MONGODB_URL") or
+        os.getenv("MONGODB_URI") or
+        os.getenv("MONGO_URL") or
+        os.getenv("MONGO_URI") or
+        ""
     )
     MONGODB_DB_NAME: str = os.getenv("MONGODB_DB_NAME", "bidnexus_ai")
     

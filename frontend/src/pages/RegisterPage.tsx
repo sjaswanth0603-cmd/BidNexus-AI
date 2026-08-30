@@ -67,7 +67,7 @@ export const RegisterPage: React.FC = () => {
         }, 1200);
       }
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to register account. Please check password requirements (min 8 chars, upper, lower, number, special char).');
+      setError(err.response?.data?.detail || 'Failed to register account. Please check the entered information.');
     } finally {
       setLoading(false);
     }
