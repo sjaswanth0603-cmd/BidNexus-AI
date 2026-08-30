@@ -12,7 +12,7 @@ services:
       - key: SECRET_KEY
         value: gem_bid_nexus_super_secret_key_sih26100_2026_production_key
       - key: MONGODB_URL
-        value: mongodb+srv://hemanthreddyg444_db_user:ePUAe1UsJiGPpj9f@cluster0.t4ru2fh.mongodb.net/bidnexus_ai?retryWrites=true&w=majority
+        value: mongodb://admin:admin@ac-sz5cgvx-shard-00-00.dpirl2u.mongodb.net:27017,ac-sz5cgvx-shard-00-01.dpirl2u.mongodb.net:27017,ac-sz5cgvx-shard-00-02.dpirl2u.mongodb.net:27017/?ssl=true&replicaSet=atlas-3ht3ip-shard-0&authSource=admin&appName=Cluster0
       - key: MONGODB_DB_NAME
         value: bidnexus_ai
       - key: LLM_PROVIDER

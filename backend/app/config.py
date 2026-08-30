@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     
     # Database Settings
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./gem_compliance.db")
-    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb+srv://hemanthreddyg444_db_user:ePUAe1UsJiGPpj9f@cluster0.t4ru2fh.mongodb.net/bidnexus_ai?retryWrites=true&w=majority")
+    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb://admin:admin@ac-sz5cgvx-shard-00-00.dpirl2u.mongodb.net:27017,ac-sz5cgvx-shard-00-01.dpirl2u.mongodb.net:27017,ac-sz5cgvx-shard-00-02.dpirl2u.mongodb.net:27017/?ssl=true&replicaSet=atlas-3ht3ip-shard-0&authSource=admin&appName=Cluster0")
     MONGODB_DB_NAME: str = os.getenv("MONGODB_DB_NAME", "bidnexus_ai")
     
     # AI API Config (Google Gemini / OpenAI / Fallback)
