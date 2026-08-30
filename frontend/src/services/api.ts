@@ -1,7 +1,18 @@
 import axios from 'axios';
 import type { User, Bid, Requirement, Vendor, Submission, AuditLog } from '../types';
 
-const API_BASE = '/api/v1';
+const getApiBase = () => {
+  if (import.meta.env.VITE_API_URL) {
+    const base = import.meta.env.VITE_API_URL.replace(/\/$/, '');
+    return base.endsWith('/api/v1') ? base : `${base}/api/v1`;
+  }
+  if (typeof window !== 'undefined' && window.location.hostname.includes('onrender.com')) {
+    return 'https://bidnexus-ai-backend.onrender.com/api/v1';
+  }
+  return '/api/v1';
+};
+
+const API_BASE = getApiBase();
 
 const api = axios.create({
   baseURL: API_BASE,
