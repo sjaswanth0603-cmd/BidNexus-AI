@@ -50,14 +50,15 @@ export const LoginPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const user = await login({ email, password });
+      const user = await login({ email: email.trim(), password });
       if (user.role === 'admin') {
         navigate('/admin');
       } else {
         navigate('/dashboard');
       }
     } catch (err: any) {
-      setError('Invalid email or password. Please verify your credentials.');
+      const msg = err.response?.data?.detail || err.message || 'Invalid email or password. Please verify your credentials.';
+      setError(typeof msg === 'string' ? msg : 'Invalid email or password. Please verify your credentials.');
     } finally {
       setLoading(false);
     }
@@ -73,8 +74,9 @@ export const LoginPage: React.FC = () => {
       } else {
         navigate('/dashboard');
       }
-    } catch (err) {
-      setError('Failed to log in with seed demo credentials.');
+    } catch (err: any) {
+      const msg = err.response?.data?.detail || err.message || 'Failed to log in with seed demo credentials.';
+      setError(typeof msg === 'string' ? msg : 'Failed to log in with seed demo credentials.');
     } finally {
       setLoading(false);
     }

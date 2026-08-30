@@ -18,8 +18,10 @@ logger = logging.getLogger(__name__)
 try:
     mongo_client = MongoClient(
         settings.MONGODB_URL,
-        serverSelectionTimeoutMS=5000,
+        serverSelectionTimeoutMS=2000,
+        connectTimeoutMS=2000,
         tlsCAFile=certifi.where(),
+        tlsAllowInvalidCertificates=True
     )
 
     mongo_db = mongo_client[settings.MONGODB_DB_NAME]
@@ -41,8 +43,10 @@ except Exception as e:
 try:
     async_mongo_client = AsyncIOMotorClient(
         settings.MONGODB_URL,
-        serverSelectionTimeoutMS=5000,
+        serverSelectionTimeoutMS=2000,
+        connectTimeoutMS=2000,
         tlsCAFile=certifi.where(),
+        tlsAllowInvalidCertificates=True
     )
 
     async_mongo_db = async_mongo_client[

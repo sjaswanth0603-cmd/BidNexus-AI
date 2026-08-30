@@ -76,7 +76,7 @@ def seed_database(db: Session):
     db.add(bidder_user)
     db.add(evaluator_user)
     db.add(evaluator_user_alt)
-    db.flush()
+    db.commit()
 
     # 2. Create AP e-Procurement Tender Bid & GeM Bids
     ap_tender = Bid(

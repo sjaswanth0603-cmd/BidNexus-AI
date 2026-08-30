@@ -31,7 +31,8 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
             detail="Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character."
         )
 
-    existing_user = db.query(User).filter(User.email == user_in.email.lower()).first()
+    email_clean = user_in.email.strip().lower()
+    existing_user = db.query(User).filter(User.email == email_clean).first()
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -48,7 +49,7 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
 
     hashed_pw = get_password_hash(user_in.password)
     new_user = User(
-        email=user_in.email.lower(),
+        email=email_clean,
         password_hash=hashed_pw,
         full_name=user_in.full_name,
         organization=user_in.organization,
@@ -70,18 +71,13 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
     db.add(audit)
     db.commit()
 
-    try:
-        from app.database.mongodb import sync_all_data_to_mongodb
-        sync_all_data_to_mongodb(db)
-    except Exception:
-        pass
-
     return new_user
 
 
 @router.post("/login", response_model=Token)
 def login(credentials: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == credentials.email.lower()).first()
+    email_clean = credentials.email.strip().lower()
+    user = db.query(User).filter(User.email == email_clean).first()
     
     # Generic security response to prevent user enumeration
     invalid_exception = HTTPException(
@@ -105,12 +101,6 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     )
     db.add(audit)
     db.commit()
-
-    try:
-        from app.database.mongodb import sync_all_data_to_mongodb
-        sync_all_data_to_mongodb(db)
-    except Exception:
-        pass
 
     return {
         "access_token": token,
