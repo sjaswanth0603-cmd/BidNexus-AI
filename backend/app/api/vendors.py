@@ -14,6 +14,16 @@ from app.document_processing.extractor import process_document_bytes, upload_fil
 
 router = APIRouter(prefix="/vendors", tags=["Vendors"])
 
+@router.get("", response_model=List[VendorOut])
+@router.get("/", response_model=List[VendorOut])
+def list_vendors(current_user: UserSession = Depends(get_current_user)):
+    vendors = vendors_col()
+    v_list = list(vendors.find())
+    for v in v_list:
+        v.pop("_id", None)
+    return v_list
+
+
 @router.post("", response_model=VendorOut, status_code=status.HTTP_201_CREATED)
 def create_vendor(vendor_in: VendorCreate, current_user: UserSession = Depends(get_current_user)):
     vendors = vendors_col()

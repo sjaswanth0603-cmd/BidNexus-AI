@@ -4,6 +4,7 @@ frontend/node_modules
 **/node_modules
 
 # Non-production directories
+backend
 java-backend
 python-ai-service
 scratch

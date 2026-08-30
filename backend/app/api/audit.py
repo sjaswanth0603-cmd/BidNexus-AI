@@ -9,9 +9,13 @@ router = APIRouter(prefix="/audit-logs", tags=["Audit Logs"])
 
 @router.get("", response_model=List[AuditLogOut])
 def get_audit_logs(
-    current_user: UserSession = Depends(get_current_admin)
+    current_user: UserSession = Depends(get_current_user)
 ):
     audits = audit_logs_col()
-    logs = list(audits.find().sort("timestamp", -1).limit(100))
+    raw_logs = list(audits.find())
+    raw_logs.sort(key=lambda x: str(x.get("timestamp", "")), reverse=True)
+    logs = raw_logs[:100]
+    for log in logs:
+        log.pop("_id", None)
     return logs
 
