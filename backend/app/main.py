@@ -29,6 +29,7 @@ app = FastAPI(
     description="AI-Powered Integrated Bid Compliance Verification Platform for GeM Procurement (SIH26100)",
     version="1.0.0",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    redirect_slashes=False,
     lifespan=lifespan
 )
 
