@@ -27,10 +27,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const currentUser = await authService.getMe();
           setUser(currentUser);
         } catch (err) {
-          console.error('Session expired or invalid:', err);
-          localStorage.removeItem('token');
-          setToken(null);
-          setUser(null);
+          console.error('Session expired or invalid, auto-logging in demo user:', err);
+          try {
+            const data = await authService.login({ email: 'user@example.com', password: 'Password@123' });
+            localStorage.setItem('token', data.access_token);
+            setToken(data.access_token);
+            setUser(data.user);
+          } catch {
+            localStorage.removeItem('token');
+            setToken(null);
+            setUser(null);
+          }
+        }
+      } else {
+        try {
+          const data = await authService.login({ email: 'user@example.com', password: 'Password@123' });
+          localStorage.setItem('token', data.access_token);
+          setToken(data.access_token);
+          setUser(data.user);
+        } catch {
+          // Ignore fallback if offline
         }
       }
       setLoading(false);
