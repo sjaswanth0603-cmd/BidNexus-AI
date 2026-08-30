@@ -157,22 +157,22 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/60 backdrop-blur-xs flex justify-end">
-      <div className="bg-white w-full max-w-2xl h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-200 border-l border-slate-200">
+      <div className="bg-white w-full max-w-full sm:max-w-2xl h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-200 border-l border-slate-200">
         
         {/* Header */}
-        <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-emerald-400">
-              <ShieldCheck className="w-5 h-5" />
+        <div className="bg-slate-900 text-white p-3.5 sm:p-5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-2 sm:p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-emerald-400 shrink-0">
+              <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <h2 className="text-base font-bold">Statutory Compliance Registrations</h2>
-              <p className="text-xs text-slate-300 font-normal">GeM Procurement Statutory & Regulatory Verification Vault</p>
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-base font-bold truncate">Statutory Compliance Registrations</h2>
+              <p className="text-[10px] sm:text-xs text-slate-300 font-normal truncate">GeM Statutory & Regulatory Verification Vault</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -180,18 +180,18 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
 
         {/* Upload Success Alert */}
         {uploadSuccess && (
-          <div className="bg-emerald-50 border-b border-emerald-200 p-3 px-5 text-xs text-emerald-800 font-medium flex items-center gap-2">
+          <div className="bg-emerald-50 border-b border-emerald-200 p-2.5 sm:p-3 px-4 sm:px-5 text-xs text-emerald-800 font-medium flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{uploadSuccess}</span>
           </div>
         )}
 
         {/* Content Split Pane */}
-        <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12">
+        <div className="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-slate-200">
           
           {/* Document Type Selector List (Left 5 cols) */}
-          <div className="md:col-span-5 border-r border-slate-200 overflow-y-auto p-3 space-y-2 bg-slate-50/50">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block px-2 py-1">
+          <div className="md:col-span-5 border-r-0 md:border-r border-slate-200 overflow-y-auto p-2.5 sm:p-3 space-y-1.5 sm:space-y-2 bg-slate-50/50 max-h-52 md:max-h-none">
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider block px-1.5 py-0.5">
               GeM Statutory Proofs ({docs.length})
             </span>
 
@@ -202,21 +202,21 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
                 <button
                   key={doc.id}
                   onClick={() => setSelectedDoc(doc)}
-                  className={`w-full text-left p-3 rounded-xl border text-xs transition-all flex items-start gap-2.5 ${
+                  className={`w-full text-left p-2.5 sm:p-3 rounded-xl border text-xs transition-all flex items-start gap-2.5 ${
                     isSelected
                       ? 'bg-white border-slate-900 shadow-sm ring-1 ring-slate-900'
                       : 'bg-white border-slate-200 hover:border-slate-300'
                   }`}
                 >
-                  <div className={`p-2 rounded-lg shrink-0 ${isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                  <div className={`p-1.5 sm:p-2 rounded-lg shrink-0 ${isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}>
                     <IconComp className="w-4 h-4" />
                   </div>
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0 space-y-0.5 sm:space-y-1">
+                    <div className="flex items-center justify-between gap-1">
                       <span className="font-bold text-slate-900 truncate block text-[11px]">
                         {doc.code}
                       </span>
-                      <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">
+                      <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-200 shrink-0">
                         {doc.status}
                       </span>
                     </div>
@@ -230,7 +230,7 @@ export const StatutoryDocumentSidebar: React.FC<StatutoryDocumentSidebarProps> =
           </div>
 
           {/* Selected Document Details & Upload Panel (Right 7 cols) */}
-          <div className="md:col-span-7 overflow-y-auto p-5 space-y-5 bg-white">
+          <div className="md:col-span-7 overflow-y-auto p-4 sm:p-5 space-y-4 sm:space-y-5 bg-white">
             {selectedDoc ? (
               <div className="space-y-5 text-xs">
                 

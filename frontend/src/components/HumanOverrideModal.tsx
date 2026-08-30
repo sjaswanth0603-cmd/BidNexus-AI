@@ -46,50 +46,50 @@ export const HumanOverrideModal: React.FC<HumanOverrideModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl overflow-hidden max-h-[92vh] overflow-y-auto">
         
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-1.5 sm:p-2 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 shrink-0">
               <UserCheck className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">Human Evaluator Decision Override</h3>
-              <p className="text-[11px] text-slate-500 font-medium">Audit-Compliant Procurement Decision Override</p>
+            <div className="min-w-0">
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 truncate">Human Evaluator Decision Override</h3>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate">Audit-Compliant Procurement Decision</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700">
+          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 text-xs text-slate-700">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 text-xs text-slate-700">
           {error && (
-            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center gap-2 font-medium">
+            <div className="p-3 sm:p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center gap-2 font-medium">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
               <span>{error}</span>
             </div>
           )}
 
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-            <span className="text-[11px] text-slate-500 font-semibold block">Requirement Target</span>
-            <p className="font-bold text-slate-900">{result.requirement?.requirement_id}: {result.requirement?.requirement}</p>
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span className="text-[10px] sm:text-[11px] text-slate-500 font-semibold block">Requirement Target</span>
+            <p className="font-bold text-slate-900 break-words">{result.requirement?.requirement_id}: {result.requirement?.requirement}</p>
             <div className="flex items-center gap-2 pt-1">
-              <span className="text-[11px] text-slate-500 font-medium">Original AI Result:</span>
+              <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium">Original AI Result:</span>
               <span className="font-mono text-amber-700 font-bold">{result.status}</span>
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <label className="block text-[11px] sm:text-xs font-bold text-slate-900 uppercase tracking-wider">
               Select Final Human Decision
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setFinalStatus('APPROVED')}
-                className={`p-3.5 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
+                className={`p-3 sm:p-3.5 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
                   finalStatus === 'APPROVED'
                     ? 'bg-emerald-50 border-emerald-500 text-emerald-900 ring-2 ring-emerald-500/20 shadow-xs'
                     : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
@@ -105,7 +105,7 @@ export const HumanOverrideModal: React.FC<HumanOverrideModalProps> = ({
               <button
                 type="button"
                 onClick={() => setFinalStatus('REJECTED')}
-                className={`p-3.5 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
+                className={`p-3 sm:p-3.5 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
                   finalStatus === 'REJECTED'
                     ? 'bg-rose-50 border-rose-500 text-rose-900 ring-2 ring-rose-500/20 shadow-xs'
                     : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
@@ -134,18 +134,18 @@ export const HumanOverrideModal: React.FC<HumanOverrideModalProps> = ({
             />
           </div>
 
-          <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-200">
+          <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 border-t border-slate-200">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-200 hover:bg-slate-300 rounded-xl transition-colors"
+              className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-200 hover:bg-slate-300 rounded-xl transition-colors text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition-colors disabled:opacity-50"
+              className="px-5 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition-colors disabled:opacity-50 text-center"
             >
               {loading ? 'Submitting Override...' : 'Commit Evaluator Override'}
             </button>
@@ -155,3 +155,5 @@ export const HumanOverrideModal: React.FC<HumanOverrideModalProps> = ({
     </div>
   );
 };
+
+export default HumanOverrideModal;

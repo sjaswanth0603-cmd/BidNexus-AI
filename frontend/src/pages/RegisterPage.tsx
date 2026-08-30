@@ -46,23 +46,33 @@ export const RegisterPage: React.FC = () => {
       await authService.register({
         full_name: fullName,
         organization,
-        email,
+        email: email.trim(),
         phone,
         password,
         confirm_password: confirmPassword,
         role,
       });
 
-      setSuccess('Bidder account created successfully! Redirecting to sign in...');
-      setTimeout(() => {
-        navigate('/login');
-      }, 1500);
+      setSuccess('Bidder account created successfully! Signing in...');
+      
+      try {
+        const loginRes = await authService.login({ email: email.trim(), password });
+        localStorage.setItem('token', loginRes.access_token);
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1000);
+      } catch {
+        setTimeout(() => {
+          navigate('/login');
+        }, 1200);
+      }
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to register account. Please check input requirements.');
+      setError(err.response?.data?.detail || 'Failed to register account. Please check password requirements (min 8 chars, upper, lower, number, special char).');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0B1228] flex items-center justify-center p-4 sm:p-6 font-sans selection:bg-[#009F6B] selection:text-white">

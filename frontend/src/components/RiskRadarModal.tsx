@@ -28,24 +28,24 @@ export const RiskRadarModal: React.FC<RiskRadarModalProps> = ({ vendorId, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl max-w-2xl w-full p-4 sm:p-6 space-y-4 sm:space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] overflow-y-auto">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200">
-              <ShieldAlert className="w-6 h-6" />
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3 sm:pb-4 gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-2 sm:p-2.5 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 shrink-0">
+              <ShieldAlert className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div>
-              <h2 className="text-lg font-black text-slate-900">Bidder Compliance Risk Radar</h2>
-              <p className="text-xs text-slate-500 font-semibold">Multi-dimensional risk breakdown & anomaly detection</p>
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-lg font-black text-slate-900 truncate">Bidder Compliance Risk Radar</h2>
+              <p className="text-[10px] sm:text-xs text-slate-500 font-semibold truncate">Multi-dimensional risk breakdown & anomaly detection</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -58,23 +58,23 @@ export const RiskRadarModal: React.FC<RiskRadarModalProps> = ({ vendorId, onClos
           </div>
         ) : (
           data && (
-            <div className="space-y-6 text-xs">
+            <div className="space-y-4 sm:space-y-6 text-xs">
               
               {/* Summary Bar */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Company Name</span>
-                  <h3 className="text-base font-black text-slate-900">{data.company_name}</h3>
+                  <h3 className="text-sm sm:text-base font-black text-slate-900 truncate">{data.company_name}</h3>
                 </div>
 
-                <div className="flex items-center gap-4 text-right">
+                <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 text-left sm:text-right w-full sm:w-auto">
                   <div>
-                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Entity Match Ratio</span>
-                    <span className="font-mono font-black text-slate-800 text-sm">{Math.round(data.entity_match_ratio * 100)}%</span>
+                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Entity Match</span>
+                    <span className="font-mono font-black text-slate-800 text-xs sm:text-sm">{Math.round(data.entity_match_ratio * 100)}%</span>
                   </div>
                   <div>
                     <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Overall Risk</span>
-                    <span className={`font-black text-xs px-3 py-1 rounded-full uppercase ${
+                    <span className={`font-black text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full uppercase ${
                       data.overall_risk === 'LOW'
                         ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                         : data.overall_risk === 'MEDIUM'
@@ -88,8 +88,8 @@ export const RiskRadarModal: React.FC<RiskRadarModalProps> = ({ vendorId, onClos
               </div>
 
               {/* Risk Dimensions Progress Bars */}
-              <div className="space-y-3">
-                <span className="font-extrabold text-slate-700 uppercase tracking-wider text-[11px] block">
+              <div className="space-y-2.5 sm:space-y-3">
+                <span className="font-extrabold text-slate-700 uppercase tracking-wider text-[10px] sm:text-[11px] block">
                   Risk Dimension Metric Breakdown
                 </span>
 
@@ -150,12 +150,12 @@ export const RiskRadarModal: React.FC<RiskRadarModalProps> = ({ vendorId, onClos
 
               {/* Detected Anomalies */}
               <div className="space-y-2">
-                <span className="font-extrabold text-slate-700 uppercase tracking-wider text-[11px] block">
+                <span className="font-extrabold text-slate-700 uppercase tracking-wider text-[10px] sm:text-[11px] block">
                   AI Detected Compliance Anomalies
                 </span>
 
                 {data.anomalies_detected.length === 0 ? (
-                  <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-2 font-bold">
+                  <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-2 font-bold text-xs">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>No critical compliance anomalies or document inconsistencies detected.</span>
                   </div>
@@ -164,7 +164,7 @@ export const RiskRadarModal: React.FC<RiskRadarModalProps> = ({ vendorId, onClos
                     {data.anomalies_detected.map((anomaly: string, idx: number) => (
                       <div
                         key={idx}
-                        className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 font-bold flex items-start gap-2.5"
+                        className="p-2.5 sm:p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 font-bold flex items-start gap-2.5 text-xs break-words"
                       >
                         <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                         <span>{anomaly}</span>
@@ -182,7 +182,7 @@ export const RiskRadarModal: React.FC<RiskRadarModalProps> = ({ vendorId, onClos
         <div className="flex justify-end pt-2 border-t border-slate-100">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors"
           >
             Close Risk Radar
           </button>

@@ -321,17 +321,17 @@ export const NewCheckWizard: React.FC = () => {
       <div className="flex flex-1">
         <Sidebar />
 
-        <main className="flex-1 p-6 lg:p-8 space-y-8 max-w-7xl">
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-7xl w-full">
           
           {/* CONSOLE HEADER */}
-          <div className="apple-card p-7 rounded-3xl space-y-6 bg-white border border-slate-200 shadow-sm">
+          <div className="apple-card p-4 sm:p-7 rounded-2xl sm:rounded-3xl space-y-4 sm:space-y-6 bg-white border border-slate-200 shadow-sm">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
-                <span className="text-xs font-extrabold text-[#174EE8] uppercase tracking-wider block mb-1 flex items-center gap-1.5">
-                  <ArrowRightLeft className="w-4 h-4 text-[#174EE8]" />
+                <span className="text-[10px] sm:text-xs font-extrabold text-[#174EE8] uppercase tracking-wider block mb-1 flex items-center gap-1.5">
+                  <ArrowRightLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#174EE8]" />
                   AI 2-File Cross-Comparison Console
                 </span>
-                <h1 className="text-2xl font-black text-slate-900">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
                   Government PDF vs. Bidder File Compliance Console
                 </h1>
                 <p className="text-xs text-slate-500 font-medium mt-1">
@@ -339,10 +339,10 @@ export const NewCheckWizard: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-bold">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-bold w-full sm:w-auto">
                 <button
                   onClick={() => setStep(3)}
-                  className={`px-4 py-2 rounded-xl transition-all ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-xl transition-all text-center ${
                     step === 3 ? 'bg-[#009F6B] text-white shadow-xs font-extrabold' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -351,7 +351,7 @@ export const NewCheckWizard: React.FC = () => {
                 <button
                   onClick={() => submission && setStep(4)}
                   disabled={!submission}
-                  className={`px-4 py-2 rounded-xl transition-all ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-xl transition-all text-center ${
                     step === 4 ? 'bg-[#009F6B] text-white shadow-xs font-extrabold' : 'text-slate-400 cursor-not-allowed'
                   }`}
                 >
@@ -362,7 +362,7 @@ export const NewCheckWizard: React.FC = () => {
           </div>
 
           {error && !error.toLowerCase().includes('method not allowed') && !error.includes('405') && (
-            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between font-medium">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between font-medium">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
                 <span>{error}</span>
@@ -378,20 +378,20 @@ export const NewCheckWizard: React.FC = () => {
             <div className="space-y-6">
               
               {/* DUAL FILE UPLOAD GRID */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 
                 {/* FILE 1: GOVERNMENT TENDER PDF */}
-                <div className="apple-card p-7 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5 flex flex-col justify-between">
+                <div className="apple-card p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 sm:space-y-5 flex flex-col justify-between">
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-extrabold uppercase tracking-wider bg-blue-50 text-blue-800 px-3 py-1 rounded-full border border-blue-200 flex items-center gap-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider bg-blue-50 text-blue-800 px-2.5 sm:px-3 py-1 rounded-full border border-blue-200 flex items-center gap-1.5">
                         <FileText className="w-3.5 h-3.5 text-blue-600" />
-                        FILE 1: GOVERNMENT TENDER PDF
+                        FILE 1: GOVT TENDER PDF
                       </span>
-                      <span className="text-xs font-mono font-bold text-slate-500">Tender Specification</span>
+                      <span className="text-[11px] sm:text-xs font-mono font-bold text-slate-500">Tender Spec</span>
                     </div>
 
-                    <h3 className="text-base font-extrabold text-slate-900">
+                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
                       Upload Official Government Tender PDF
                     </h3>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">
@@ -400,15 +400,15 @@ export const NewCheckWizard: React.FC = () => {
                   </div>
 
                   {/* Drag & Drop File 1 */}
-                  <div className="border-2 border-dashed border-blue-200 hover:border-blue-500 rounded-2xl p-6 text-center bg-blue-50/30 space-y-3 transition-colors">
+                  <div className="border-2 border-dashed border-blue-200 hover:border-blue-500 rounded-2xl p-4 sm:p-6 text-center bg-blue-50/30 space-y-2 sm:space-y-3 transition-colors">
                     {!bidFile ? (
                       <label className="cursor-pointer space-y-2 block">
-                        <Upload className="w-8 h-8 text-blue-500 mx-auto" />
+                        <Upload className="w-7 h-7 sm:w-8 sm:h-8 text-blue-500 mx-auto" />
                         <div className="space-y-1">
-                          <span className="text-xs font-bold text-blue-700 hover:underline">
+                          <span className="text-xs font-bold text-blue-700 hover:underline block">
                             Click to select Govt Tender PDF
                           </span>
-                          <span className="text-[11px] text-slate-500 font-medium block">
+                          <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium block">
                             or drag and drop official tender document
                           </span>
                         </div>
@@ -420,14 +420,14 @@ export const NewCheckWizard: React.FC = () => {
                         />
                       </label>
                     ) : (
-                      <div className="flex items-center justify-between p-3.5 rounded-xl bg-white border border-blue-200 shadow-xs">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
-                            <FileText className="w-5 h-5" />
+                      <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-blue-200 shadow-xs">
+                        <div className="flex items-center gap-2.5 sm:gap-3">
+                          <div className="p-1.5 sm:p-2 rounded-lg bg-blue-50 text-blue-600">
+                            <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                           </div>
                           <div className="text-left">
-                            <h4 className="text-xs font-bold text-slate-900">{bidFile.name}</h4>
-                            <span className="text-[11px] text-slate-500 font-medium">
+                            <h4 className="text-xs font-bold text-slate-900 truncate max-w-[160px] sm:max-w-xs">{bidFile.name}</h4>
+                            <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium">
                               {(bidFile.size / 1024 / 1024).toFixed(2)} MB
                             </span>
                           </div>
@@ -444,17 +444,17 @@ export const NewCheckWizard: React.FC = () => {
                   </div>
 
                   {/* Tender Summary Context */}
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-700">Loaded Tender Title:</span>
-                      <span className="font-mono text-[11px] font-bold text-blue-700">{bidId || 'GEM/2026/B/983373'}</span>
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 sm:space-y-2">
+                    <div className="flex items-center justify-between text-xs gap-2">
+                      <span className="font-bold text-slate-700">Loaded Tender:</span>
+                      <span className="font-mono text-[10px] sm:text-[11px] font-bold text-blue-700 truncate">{bidId || 'GEM/2026/B/983373'}</span>
                     </div>
                     <p className="text-[11px] text-slate-600 font-semibold truncate">
                       {tenderTitle}
                     </p>
                     <div className="flex flex-wrap gap-1 pt-1">
                       {(Array.isArray(requirements) ? requirements : []).slice(0, 4).map((r) => (
-                        <span key={r.id} className="text-[10px] font-mono bg-white text-slate-700 px-2 py-0.5 rounded border border-slate-200 font-bold">
+                        <span key={r.id} className="text-[9px] sm:text-[10px] font-mono bg-white text-slate-700 px-1.5 sm:px-2 py-0.5 rounded border border-slate-200 font-bold">
                           {r.category}: {r.operator} {r.value} {r.unit}
                         </span>
                       ))}
@@ -463,17 +463,17 @@ export const NewCheckWizard: React.FC = () => {
                 </div>
 
                 {/* FILE 2: BIDDER SUBMISSION PDF */}
-                <div className="apple-card p-7 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5 flex flex-col justify-between">
+                <div className="apple-card p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 sm:space-y-5 flex flex-col justify-between">
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-800 px-2.5 sm:px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
                         <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
-                        FILE 2: BIDDER SUBMISSION FILE
+                        FILE 2: BIDDER SUBMISSION
                       </span>
-                      <span className="text-xs font-mono font-bold text-slate-500">Vendor Submission</span>
+                      <span className="text-[11px] sm:text-xs font-mono font-bold text-slate-500">Vendor Bid</span>
                     </div>
 
-                    <h3 className="text-base font-extrabold text-slate-900">
+                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
                       Upload Bidder Submission / Evidence PDF
                     </h3>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">
@@ -482,26 +482,26 @@ export const NewCheckWizard: React.FC = () => {
                   </div>
 
                   {/* Bidder Company Name Input */}
-                  <div className="space-y-1.5 text-xs">
+                  <div className="space-y-1 text-xs">
                     <label className="block font-bold text-slate-700">Bidder Company Name</label>
                     <input
                       type="text"
                       value={vendorName}
                       onChange={(e) => setVendorName(e.target.value)}
                       placeholder="Enter bidder company name"
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white"
                     />
                   </div>
 
                   {/* Drag & Drop File 2 */}
-                  <div className="border-2 border-dashed border-emerald-200 hover:border-emerald-500 rounded-2xl p-5 text-center bg-emerald-50/30 space-y-2 transition-colors">
+                  <div className="border-2 border-dashed border-emerald-200 hover:border-emerald-500 rounded-2xl p-4 sm:p-5 text-center bg-emerald-50/30 space-y-2 transition-colors">
                     <label className="cursor-pointer space-y-2 block">
                       <Upload className="w-7 h-7 text-emerald-500 mx-auto" />
                       <div className="space-y-1">
-                        <span className="text-xs font-bold text-emerald-700 hover:underline">
+                        <span className="text-xs font-bold text-emerald-700 hover:underline block">
                           Click to select Bidder PDF File
                         </span>
-                        <span className="text-[11px] text-slate-500 font-medium block">
+                        <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium block">
                           or attach GST, MAF, Datasheet PDFs
                         </span>
                       </div>
@@ -529,13 +529,13 @@ export const NewCheckWizard: React.FC = () => {
                     <div className="space-y-1.5 max-h-28 overflow-y-auto">
                       {vendorFiles.map((file, idx) => (
                         <div key={idx} className="p-2 rounded-xl bg-white border border-emerald-200 shadow-xs flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2">
-                            <FileText className="w-4 h-4 text-emerald-600" />
-                            <span className="font-bold text-slate-800">{file.name}</span>
+                          <div className="flex items-center gap-2 truncate">
+                            <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span className="font-bold text-slate-800 truncate">{file.name}</span>
                           </div>
                           <button
                             onClick={() => setVendorFiles((prev) => prev.filter((_, i) => i !== idx))}
-                            className="p-1 text-slate-400 hover:text-rose-600"
+                            className="p-1 text-slate-400 hover:text-rose-600 shrink-0"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -546,10 +546,10 @@ export const NewCheckWizard: React.FC = () => {
 
                   {/* 1-CLICK TEST BIDDER PACKAGES */}
                   <div className="space-y-2 pt-2 border-t border-slate-200">
-                    <span className="text-[11px] font-extrabold text-slate-600 uppercase tracking-wider block">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-600 uppercase tracking-wider block">
                       ⚡ Quick 1-Click Test Bidder Package:
                     </span>
-                    <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-2 text-xs">
                       <button
                         type="button"
                         onClick={() => {
@@ -557,7 +557,7 @@ export const NewCheckWizard: React.FC = () => {
                           setVendorName('TechCorp Solutions AP Pvt Ltd');
                           setVendorFiles([]);
                         }}
-                        className={`p-2 rounded-xl border text-center font-bold transition-all ${
+                        className={`p-2 rounded-xl border text-center font-bold transition-all text-xs ${
                           presetPackage === 'compliant'
                             ? 'bg-emerald-50 border-emerald-500 text-emerald-900 ring-2 ring-emerald-500/20'
                             : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -573,7 +573,7 @@ export const NewCheckWizard: React.FC = () => {
                           setVendorName('InfraSys Global Engineering Ltd');
                           setVendorFiles([]);
                         }}
-                        className={`p-2 rounded-xl border text-center font-bold transition-all ${
+                        className={`p-2 rounded-xl border text-center font-bold transition-all text-xs ${
                           presetPackage === 'non_compliant'
                             ? 'bg-rose-50 border-rose-500 text-rose-900 ring-2 ring-rose-500/20'
                             : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -589,7 +589,7 @@ export const NewCheckWizard: React.FC = () => {
                           setVendorName('Apex Network Labs Vizag');
                           setVendorFiles([]);
                         }}
-                        className={`p-2 rounded-xl border text-center font-bold transition-all ${
+                        className={`p-2 rounded-xl border text-center font-bold transition-all text-xs ${
                           presetPackage === 'review_required'
                             ? 'bg-amber-50 border-amber-500 text-amber-900 ring-2 ring-amber-500/20'
                             : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -604,15 +604,15 @@ export const NewCheckWizard: React.FC = () => {
               </div>
 
               {/* ACTION CALL-TO-ACTION BAR */}
-              <div className="apple-card p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+              <div className="apple-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 shadow-xl">
                 <div className="space-y-1 text-center md:text-left">
-                  <span className="text-xs font-extrabold text-amber-300 uppercase tracking-widest block">
+                  <span className="text-[10px] sm:text-xs font-extrabold text-amber-300 uppercase tracking-widest block">
                     AI Bid Suitability Engine Ready
                   </span>
-                  <h3 className="text-lg font-black text-white">
+                  <h3 className="text-base sm:text-lg font-black text-white">
                     Compare File 1 (Govt PDF) vs File 2 (Bidder PDF)
                   </h3>
-                  <p className="text-xs text-slate-300 font-medium">
+                  <p className="text-xs text-slate-300 font-medium leading-relaxed">
                     Evaluates turnover, RAM specs, ISO validity, OEM MAF & warranty to produce an instant suitability verdict.
                   </p>
                 </div>
@@ -620,15 +620,16 @@ export const NewCheckWizard: React.FC = () => {
                 <button
                   disabled={vendorUploadLoading}
                   onClick={handleRunTwoFileComparison}
-                  className="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-sm shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-3 shrink-0"
+                  className="w-full md:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2.5 shrink-0"
                 >
-                  <ArrowRightLeft className="w-5 h-5 text-white" />
+                  <ArrowRightLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   <span>{vendorUploadLoading ? 'Evaluating 2 Files...' : 'RUN 2-FILE AI COMPARISON'}</span>
                 </button>
               </div>
 
             </div>
           )}
+
 
           {/* STEP 4: 2-FILE COMPARISON VERDICT & SUITABILITY RESULTS */}
           {step === 4 && (
@@ -648,26 +649,26 @@ export const NewCheckWizard: React.FC = () => {
                   <div className="space-y-6">
                     
                     {/* TOP VERDICT CARD: IS THE BID SUITED FOR TENDER? */}
-                    <div className={`p-8 rounded-3xl border ${suitability.cardBg} shadow-sm space-y-6 transition-all`}>
+                    <div className={`p-4 sm:p-8 rounded-2xl sm:rounded-3xl border ${suitability.cardBg} shadow-sm space-y-4 sm:space-y-6 transition-all`}>
                       
-                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
                         
-                        <div className="flex items-start gap-4">
-                          <div className="p-3.5 rounded-2xl bg-white shadow-xs border border-slate-200 shrink-0">
+                        <div className="flex items-start gap-3 sm:gap-4">
+                          <div className="p-2.5 sm:p-3.5 rounded-2xl bg-white shadow-xs border border-slate-200 shrink-0">
                             {suitability.icon}
                           </div>
 
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className={`text-xs font-black px-3.5 py-1 rounded-full border tracking-wide uppercase ${suitability.statusClass}`}>
+                          <div className="space-y-1.5 sm:space-y-2">
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                              <span className={`text-[10px] sm:text-xs font-black px-2.5 sm:px-3.5 py-1 rounded-full border tracking-wide uppercase ${suitability.statusClass}`}>
                                 {suitability.badge}
                               </span>
-                              <span className="bg-white text-slate-900 text-xs px-3 py-1 rounded-full border border-slate-200 font-mono font-bold shadow-xs">
+                              <span className="bg-white text-slate-900 text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full border border-slate-200 font-mono font-bold shadow-xs truncate max-w-[200px] sm:max-w-none">
                                 Bidder: {submission.vendor.company_name}
                               </span>
                             </div>
 
-                            <h2 className="text-2xl font-black text-slate-900">
+                            <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
                               Suitability Verdict: <span className="underline decoration-wavy decoration-emerald-500">{suitability.verdictText}</span>
                             </h2>
 
@@ -678,11 +679,11 @@ export const NewCheckWizard: React.FC = () => {
                         </div>
 
                         {/* Overall Compliance Score Gauge */}
-                        <div className="text-center bg-white p-5 rounded-2xl border border-slate-200 shadow-xs shrink-0 space-y-1 min-w-[170px]">
+                        <div className="text-center bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-xs shrink-0 space-y-1 w-full md:w-auto min-w-[170px]">
                           <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">
                             Overall Compliance Score
                           </span>
-                          <span className={`text-3xl font-black font-mono block ${
+                          <span className={`text-2xl sm:text-3xl font-black font-mono block ${
                             submission.compliance_score >= 90
                               ? 'text-emerald-600'
                               : submission.compliance_score >= 60
@@ -691,7 +692,7 @@ export const NewCheckWizard: React.FC = () => {
                           }`}>
                             {submission.compliance_score}%
                           </span>
-                          <span className="text-[11px] font-bold text-slate-600 block">
+                          <span className="text-[10px] sm:text-[11px] font-bold text-slate-600 block">
                             {submission.compliance_results.filter(r => r.status === 'COMPLIANT').length} of {submission.compliance_results.length} Rules Passed
                           </span>
                         </div>
@@ -699,37 +700,37 @@ export const NewCheckWizard: React.FC = () => {
                       </div>
 
                       {/* Action & Download Bar */}
-                      <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200/80">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-slate-200/80">
                         <button
                           onClick={() => setStep(3)}
-                          className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold border border-slate-200 shadow-xs flex items-center gap-1.5"
+                          className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold border border-slate-200 shadow-xs flex items-center justify-center gap-1.5"
                         >
                           <ArrowRightLeft className="w-4 h-4 text-slate-600" />
-                          <span>Compare Another Bidder / Govt PDF</span>
+                          <span>Compare Another Bid</span>
                         </button>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
                           <a
                             href={`/api/v1/reports/pdf/${submission.id}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all flex items-center gap-2"
+                            className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 sm:gap-2"
                           >
                             <Download className="w-4 h-4" />
-                            <span>Download PDF Audit Report</span>
+                            <span>PDF Audit</span>
                           </a>
 
                           <a
                             href={`/api/v1/reports/csv/${submission.id}`}
                             download
-                            className="px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold border border-slate-200 shadow-xs transition-all flex items-center gap-2"
+                            className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold border border-slate-200 shadow-xs transition-all flex items-center justify-center gap-1.5 sm:gap-2"
                           >
                             <FileSpreadsheet className="w-4 h-4 text-sky-600" />
-                            <span>Export CSV</span>
+                            <span>CSV</span>
                           </a>
 
                           {submission.status === 'SUBMITTED_TO_EVALUATOR' || submittedToEvaluatorSuccess ? (
-                            <div className="px-4 py-2.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-extrabold flex items-center gap-2">
+                            <div className="w-full sm:w-auto px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-extrabold flex items-center justify-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-indigo-600" />
                               <span>Submitted to Evaluator</span>
                             </div>
@@ -737,10 +738,10 @@ export const NewCheckWizard: React.FC = () => {
                             <button
                               disabled={submittingToEvaluator}
                               onClick={handleSubmitToEvaluator}
-                              className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-md shadow-indigo-600/20 transition-all flex items-center gap-2"
+                              className="w-full sm:w-auto px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-md shadow-indigo-600/20 transition-all flex items-center justify-center gap-2"
                             >
                               <Send className="w-4 h-4" />
-                              <span>{submittingToEvaluator ? 'Submitting...' : 'Submit to Procurement Evaluator'}</span>
+                              <span>{submittingToEvaluator ? 'Submitting...' : 'Submit to Evaluator'}</span>
                             </button>
                           )}
                         </div>
@@ -749,14 +750,14 @@ export const NewCheckWizard: React.FC = () => {
                     </div>
 
                     {/* SIDE-BY-SIDE TWO-FILE COMPARISON MATRIX TABLE */}
-                    <div className="apple-card p-7 rounded-3xl space-y-4 bg-white border border-slate-200 shadow-sm">
+                    <div className="apple-card p-4 sm:p-7 rounded-2xl sm:rounded-3xl space-y-4 bg-white border border-slate-200 shadow-sm">
                       
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 border-b border-slate-200 pb-4">
                         <div>
-                          <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                          <h3 className="text-sm sm:text-base font-extrabold text-slate-900 flex flex-wrap items-center gap-2">
                             <span>2-File Side-by-Side Verification Matrix</span>
-                            <span className="bg-blue-50 text-blue-800 text-xs px-3 py-0.5 rounded-full font-mono font-bold border border-blue-200">
-                              File 1 (Govt PDF) vs. File 2 (Bidder PDF)
+                            <span className="bg-blue-50 text-blue-800 text-[10px] sm:text-xs px-2.5 sm:px-3 py-0.5 rounded-full font-mono font-bold border border-blue-200">
+                              File 1 vs. File 2
                             </span>
                           </h3>
                           <p className="text-xs text-slate-500 font-medium">
@@ -765,10 +766,10 @@ export const NewCheckWizard: React.FC = () => {
                         </div>
 
                         {/* Status Filter Buttons */}
-                        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold overflow-x-auto whitespace-nowrap pb-1 sm:pb-1 scrollbar-none w-full sm:w-auto">
                           <button
                             onClick={() => setResultFilter('ALL')}
-                            className={`px-3 py-1 rounded-lg transition-all ${
+                            className={`px-2.5 sm:px-3 py-1 rounded-lg transition-all text-xs shrink-0 ${
                               resultFilter === 'ALL' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
                             }`}
                           >
@@ -776,7 +777,7 @@ export const NewCheckWizard: React.FC = () => {
                           </button>
                           <button
                             onClick={() => setResultFilter('COMPLIANT')}
-                            className={`px-3 py-1 rounded-lg transition-all ${
+                            className={`px-2.5 sm:px-3 py-1 rounded-lg transition-all text-xs shrink-0 ${
                               resultFilter === 'COMPLIANT' ? 'bg-emerald-600 text-white shadow-xs' : 'text-emerald-700 hover:bg-emerald-50'
                             }`}
                           >
@@ -784,7 +785,7 @@ export const NewCheckWizard: React.FC = () => {
                           </button>
                           <button
                             onClick={() => setResultFilter('REVIEW_REQUIRED')}
-                            className={`px-3 py-1 rounded-lg transition-all ${
+                            className={`px-2.5 sm:px-3 py-1 rounded-lg transition-all text-xs shrink-0 ${
                               resultFilter === 'REVIEW_REQUIRED' ? 'bg-amber-500 text-white shadow-xs' : 'text-amber-700 hover:bg-amber-50'
                             }`}
                           >
@@ -792,7 +793,7 @@ export const NewCheckWizard: React.FC = () => {
                           </button>
                           <button
                             onClick={() => setResultFilter('NON_COMPLIANT')}
-                            className={`px-3 py-1 rounded-lg transition-all ${
+                            className={`px-2.5 sm:px-3 py-1 rounded-lg transition-all text-xs shrink-0 ${
                               resultFilter === 'NON_COMPLIANT' ? 'bg-rose-600 text-white shadow-xs' : 'text-rose-700 hover:bg-rose-50'
                             }`}
                           >
@@ -802,17 +803,17 @@ export const NewCheckWizard: React.FC = () => {
                       </div>
 
                       {/* DETAILED SIDE-BY-SIDE MATRIX TABLE */}
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs border-collapse">
+                      <div className="overflow-x-auto w-full max-w-full block">
+                        <table className="w-full text-left text-xs border-collapse min-w-[680px]">
                           <thead>
                             <tr className="bg-slate-100 text-slate-700 border-b border-slate-200 uppercase text-[10px] tracking-wider font-black">
-                              <th className="p-3 bg-blue-50/60 text-blue-900 border-r border-slate-200">
+                              <th className="p-3 bg-blue-50/60 text-blue-900 border-r border-slate-200 w-1/3">
                                 📄 FILE 1: GOVT TENDER REQUIREMENT
                               </th>
-                              <th className="p-3 bg-emerald-50/60 text-emerald-900 border-r border-slate-200">
+                              <th className="p-3 bg-emerald-50/60 text-emerald-900 border-r border-slate-200 w-1/3">
                                 📄 FILE 2: BIDDER EVIDENCE EXTRACTED
                               </th>
-                              <th className="p-3">SUITABILITY</th>
+                              <th className="p-3 w-28">SUITABILITY</th>
                               <th className="p-3">REASON / RATIONALE</th>
                             </tr>
                           </thead>
@@ -826,70 +827,70 @@ export const NewCheckWizard: React.FC = () => {
                                   className="hover:bg-slate-50 cursor-pointer transition-colors"
                                 >
                                   {/* Column 1: Govt Tender Requirement (File 1) */}
-                                  <td className="p-3 border-r border-slate-200 max-w-xs bg-blue-50/20">
+                                  <td className="p-3 border-r border-slate-200 bg-blue-50/20 align-top">
                                     <div className="space-y-1">
                                       <div className="flex items-center gap-1.5">
-                                        <span className="font-mono font-black text-blue-700 text-[11px]">
+                                        <span className="font-mono font-black text-blue-700 text-[10px] sm:text-[11px]">
                                           {res.requirement?.requirement_id}
                                         </span>
-                                        <span className="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded font-extrabold">
+                                        <span className="bg-blue-100 text-blue-800 text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded font-extrabold">
                                           {res.requirement?.category}
                                         </span>
                                       </div>
-                                      <p className="font-bold text-slate-900 leading-snug">
+                                      <p className="font-bold text-slate-900 leading-snug break-words">
                                         {res.requirement?.requirement}
                                       </p>
                                       {res.requirement?.value && (
-                                        <span className="text-[10px] font-mono text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200 font-bold block w-fit">
-                                          Rule Target: {res.requirement.operator} {res.requirement.value} {res.requirement.unit}
+                                        <span className="text-[10px] font-mono text-slate-600 bg-white px-1.5 py-0.5 rounded border border-slate-200 font-bold block w-fit">
+                                          Target: {res.requirement.operator} {res.requirement.value} {res.requirement.unit}
                                         </span>
                                       )}
                                     </div>
                                   </td>
 
                                   {/* Column 2: Bidder Evidence Extracted (File 2) */}
-                                  <td className="p-3 border-r border-slate-200 max-w-xs bg-emerald-50/20">
+                                  <td className="p-3 border-r border-slate-200 bg-emerald-50/20 align-top">
                                     <div className="space-y-1">
-                                      <div className="flex items-center justify-between text-[11px]">
-                                        <span className="font-mono font-bold text-emerald-800">
+                                      <div className="flex items-center justify-between text-[11px] gap-1">
+                                        <span className="font-mono font-bold text-emerald-800 truncate">
                                           {res.source_doc_name || 'Bidder PDF Document'}
                                         </span>
                                         {res.source_page && (
-                                          <span className="bg-emerald-100 text-emerald-900 font-mono text-[10px] font-extrabold px-1.5 py-0.5 rounded">
-                                            Page {res.source_page}
+                                          <span className="bg-emerald-100 text-emerald-900 font-mono text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded shrink-0">
+                                            p.{res.source_page}
                                           </span>
                                         )}
                                       </div>
-                                      <p className="font-mono text-[11px] text-slate-800 bg-white p-2 rounded border border-slate-200 leading-snug">
+                                      <p className="font-mono text-[10px] sm:text-[11px] text-slate-800 bg-white p-2 rounded border border-slate-200 leading-snug break-words">
                                         "{res.evidence_text || 'No matching snippet extracted from Bidder PDF'}"
                                       </p>
                                     </div>
                                   </td>
 
                                   {/* Column 3: Suitability Badge */}
-                                  <td className="p-3 whitespace-nowrap">
+                                  <td className="p-3 whitespace-nowrap align-top">
                                     {res.status === 'COMPLIANT' && (
-                                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1 w-fit">
-                                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                      <span className="px-2 sm:px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1 w-fit">
+                                        <Check className="w-3 h-3 text-emerald-600" />
                                         SUITED 🟢
                                       </span>
                                     )}
                                     {res.status === 'REVIEW_REQUIRED' && (
-                                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1 w-fit">
-                                        <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                                      <span className="px-2 sm:px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1 w-fit">
+                                        <AlertCircle className="w-3 h-3 text-amber-600" />
                                         REVIEW 🟡
                                       </span>
                                     )}
                                     {res.status === 'NON_COMPLIANT' && (
-                                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1 w-fit">
-                                        <XCircle className="w-3.5 h-3.5 text-rose-600" />
+                                      <span className="px-2 sm:px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1 w-fit">
+                                        <XCircle className="w-3 h-3 text-rose-600" />
                                         NOT SUITED 🔴
                                       </span>
                                     )}
                                   </td>
 
                                   {/* Column 4: Reason / Rationale */}
-                                  <td className="p-3 text-slate-600 text-[11px] leading-relaxed max-w-xs font-medium">
+                                  <td className="p-3 text-slate-600 text-[10px] sm:text-[11px] leading-relaxed font-medium align-top break-words">
                                     {res.reasoning}
                                   </td>
                                 </tr>
@@ -897,6 +898,7 @@ export const NewCheckWizard: React.FC = () => {
                           </tbody>
                         </table>
                       </div>
+
 
                     </div>
 

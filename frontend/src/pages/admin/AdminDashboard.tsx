@@ -46,25 +46,25 @@ export const AdminDashboard: React.FC = () => {
       <div className="flex flex-1">
         <Sidebar />
 
-        <main className="flex-1 p-6 lg:p-8 space-y-6 max-w-7xl">
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full">
           
           {/* Evaluator Header Banner */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 lg:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
             <div className="space-y-1.5">
-              <span className="text-xs font-semibold text-slate-900 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider inline-block">
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-900 bg-slate-100 px-2.5 sm:px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider inline-block">
                 PROCUREMENT EVALUATOR BOARD
               </span>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight leading-snug">
                 Evaluator Control Board — {user?.full_name || 'Procurement Evaluator'}
               </h1>
-              <p className="text-sm text-slate-600 font-normal leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
                 Multi-source evidence verification, cross-vendor comparison matrix, and PDF audit report generation.
               </p>
             </div>
 
             <button
               onClick={() => navigate('/admin/create-bid')}
-              className="px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs shadow-xs transition-colors flex items-center gap-2 shrink-0"
+              className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs shadow-xs transition-colors flex items-center justify-center gap-2 shrink-0"
             >
               <Plus className="w-4 h-4 text-emerald-400" />
               <span>Create Tender Requirement</span>
@@ -72,8 +72,8 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Key Evaluation Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs space-y-1.5 sm:space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500">Total Tender Bids</span>
                 <div className="p-2 rounded-xl bg-slate-100 text-slate-700">
@@ -81,10 +81,10 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="text-2xl font-bold text-slate-900">{bids.length || 4}</div>
-              <span className="text-xs text-slate-500 font-normal">Extracted GeM Tenders</span>
+              <span className="text-[11px] text-slate-500 font-normal">Extracted GeM Tenders</span>
             </div>
 
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs space-y-2">
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs space-y-1.5 sm:space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500">Evaluated Submissions</span>
                 <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200/60">
@@ -92,10 +92,10 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="text-2xl font-bold text-emerald-600">3</div>
-              <span className="text-xs text-emerald-600 font-medium">1 Compliant, 1 Review, 1 Non-Compliant</span>
+              <span className="text-[11px] text-emerald-600 font-medium">1 Compliant, 1 Review, 1 Non-Compliant</span>
             </div>
 
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs space-y-2">
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs space-y-1.5 sm:space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500">Mandatory Shortfalls</span>
                 <div className="p-2 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60">
@@ -103,10 +103,10 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="text-2xl font-bold text-amber-600">2</div>
-              <span className="text-xs text-amber-700 font-medium">Flagged by RAG Engine</span>
+              <span className="text-[11px] text-amber-700 font-medium">Flagged by RAG Engine</span>
             </div>
 
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs space-y-2">
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs space-y-1.5 sm:space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500">System Audit Trail</span>
                 <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-200/60">
@@ -114,7 +114,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="text-2xl font-bold text-slate-900">100%</div>
-              <span className="text-xs text-slate-500 font-normal">Immutable Audit Logs</span>
+              <span className="text-[11px] text-slate-500 font-normal">Immutable Audit Logs</span>
             </div>
           </div>
 
@@ -126,14 +126,14 @@ export const AdminDashboard: React.FC = () => {
             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               Evaluator Management Tools
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               
               <div
                 onClick={() => navigate('/admin/comparison')}
-                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-5 cursor-pointer transition-all shadow-xs hover:shadow-md group space-y-3"
+                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-4 sm:p-5 cursor-pointer transition-all shadow-xs hover:shadow-md group space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <div className="p-2.5 rounded-xl bg-slate-900 text-white">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-slate-900 text-white">
                     <GitCompare className="w-5 h-5 text-amber-400" />
                   </div>
                   <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-transform" />
@@ -148,10 +148,10 @@ export const AdminDashboard: React.FC = () => {
 
               <div
                 onClick={() => navigate('/test-page')}
-                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-5 cursor-pointer transition-all shadow-xs hover:shadow-md group space-y-3"
+                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-4 sm:p-5 cursor-pointer transition-all shadow-xs hover:shadow-md group space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200/60">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200/60">
                     <Zap className="w-5 h-5 fill-emerald-600" />
                   </div>
                   <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-transform" />
@@ -166,10 +166,10 @@ export const AdminDashboard: React.FC = () => {
 
               <div
                 onClick={() => navigate('/admin/vendors')}
-                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-5 cursor-pointer transition-all shadow-xs hover:shadow-md group space-y-3"
+                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-4 sm:p-5 cursor-pointer transition-all shadow-xs hover:shadow-md group space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 border border-blue-200/60">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-blue-50 text-blue-600 border border-blue-200/60">
                     <Users className="w-5 h-5" />
                   </div>
                   <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-transform" />
@@ -184,10 +184,10 @@ export const AdminDashboard: React.FC = () => {
 
               <div
                 onClick={() => navigate('/admin/audit-logs')}
-                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-5 cursor-pointer transition-all shadow-xs hover:shadow-md group space-y-3"
+                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-4 sm:p-5 cursor-pointer transition-all shadow-xs hover:shadow-md group space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60">
                     <History className="w-5 h-5" />
                   </div>
                   <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-transform" />
@@ -204,22 +204,22 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Active Tenders Listing Table */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3.5 gap-2">
               <div>
-                <h3 className="text-base font-semibold text-slate-900">Active GeM Procurement Bids</h3>
+                <h3 className="text-sm sm:text-base font-semibold text-slate-900">Active GeM Procurement Bids</h3>
                 <p className="text-xs text-slate-500 font-normal">Select a tender to manage vendor submissions or compare bidders.</p>
               </div>
               <button
                 onClick={() => navigate('/admin/create-bid')}
-                className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline shrink-0"
               >
                 + Extract New Tender →
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className="overflow-x-auto w-full max-w-full block">
+              <table className="w-full text-left text-xs border-collapse min-w-[580px]">
                 <thead>
                   <tr className="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider font-semibold border-b border-slate-200/80">
                     <th className="p-3">Tender Number</th>
@@ -233,22 +233,22 @@ export const AdminDashboard: React.FC = () => {
                   {bids.map((b) => (
                     <tr key={b.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="p-3 font-mono text-emerald-700 font-semibold">{b.bid_number}</td>
-                      <td className="p-3 font-semibold text-slate-900 max-w-sm">{b.title}</td>
+                      <td className="p-3 font-semibold text-slate-900 max-w-xs sm:max-w-sm truncate">{b.title}</td>
                       <td className="p-3 text-slate-600">{b.department}</td>
-                      <td className="p-3 font-mono text-blue-600 font-medium">{b.requirements_count || 5} Rules Extracted</td>
+                      <td className="p-3 font-mono text-blue-600 font-medium">{b.requirements_count || 5} Rules</td>
                       <td className="p-3 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => navigate(`/admin/comparison?bidId=${b.id}`)}
-                            className="px-3 py-1.5 rounded-lg bg-slate-900 text-white font-medium text-xs hover:bg-slate-800 transition-colors shadow-2xs"
+                            className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-900 text-white font-medium text-[11px] sm:text-xs hover:bg-slate-800 transition-colors shadow-2xs"
                           >
-                            Compare Bidders
+                            Compare
                           </button>
                           <button
                             onClick={() => navigate(`/test-page?tenderId=${b.id}`)}
-                            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs transition-colors shadow-2xs"
+                            className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-[11px] sm:text-xs transition-colors shadow-2xs"
                           >
-                            2-File Check
+                            Verify
                           </button>
                         </div>
                       </td>
@@ -260,6 +260,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
         </main>
+
       </div>
 
       <AIAssistantDrawer isOpen={showAssistant} onClose={() => setShowAssistant(false)} bidId={bids[0]?.id || '983373'} />

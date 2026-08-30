@@ -101,42 +101,42 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white border-l border-slate-200 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-full sm:max-w-md bg-white border-l border-slate-200 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
       
       {/* Header Bar */}
-      <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-sm">
-            <Bot className="w-5 h-5" />
+      <div className="p-3.5 sm:p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <div className="p-1.5 sm:p-2 rounded-xl bg-indigo-600 text-white shadow-sm shrink-0">
+            <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <h3 className="text-xs font-black text-slate-900 flex items-center gap-1.5">
+          <div className="min-w-0">
+            <h3 className="text-xs font-black text-slate-900 flex items-center gap-1.5 truncate">
               <span>Procurement AI Copilot</span>
-              <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />
             </h3>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className={`text-[9px] font-extrabold font-mono px-2 py-0.5 rounded-md border ${
+              <span className={`text-[9px] font-extrabold font-mono px-1.5 sm:px-2 py-0.5 rounded-md border truncate ${
                 aiStatus?.openai_configured
                   ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                   : 'bg-slate-100 text-slate-600 border-slate-200'
               }`}>
-                {aiStatus?.active_provider || 'Hybrid RAG Engine'} ({aiStatus?.active_model || 'gpt-4o-mini'})
+                {aiStatus?.active_provider || 'Hybrid RAG'} ({aiStatus?.active_model || 'gpt-4o-mini'})
               </span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
             onClick={() => setShowKeyModal(true)}
             title="Configure OpenAI Key"
-            className="p-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-xs font-bold flex items-center gap-1 transition-colors"
+            className="p-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-colors"
           >
             <Key className="w-3.5 h-3.5 text-indigo-600" />
-            <span className="hidden sm:inline">OpenAI Key</span>
+            <span className="hidden xs:inline">Key</span>
           </button>
 
-          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-700">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>

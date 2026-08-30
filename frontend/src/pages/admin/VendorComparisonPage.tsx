@@ -69,29 +69,31 @@ export const VendorComparisonPage: React.FC = () => {
       <div className="flex flex-1">
         <Sidebar />
 
-        <main className="flex-1 p-6 lg:p-8 space-y-8 max-w-7xl">
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-7xl w-full">
           
-          <div className="apple-card p-6 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="apple-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-cyan-50 text-cyan-600 border border-cyan-200">
-                <GitCompare className="w-6 h-6" />
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-cyan-50 text-cyan-600 border border-cyan-200 shrink-0">
+                <GitCompare className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-extrabold text-slate-900">Side-by-Side Vendor Comparison Board</h1>
+                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
+                  Side-by-Side Vendor Comparison Board
+                </h1>
                 <p className="text-xs text-slate-600 font-medium">Comparative technical & financial evaluation matrix</p>
               </div>
             </div>
 
             {bids.length > 0 && (
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-bold text-slate-600">Select Tender:</label>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+                <label className="text-xs font-bold text-slate-600 shrink-0">Select Tender:</label>
                 <select
                   value={selectedBidId}
                   onChange={(e) => handleBidChange(e.target.value)}
-                  className="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 font-bold focus:outline-none focus:border-cyan-500"
+                  className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 font-bold focus:outline-none focus:border-cyan-500"
                 >
                   {bids.map((b) => (
-                    <option key={b.id} value={b.id}>{b.bid_number} — {b.title.slice(0, 30)}...</option>
+                    <option key={b.id} value={b.id}>{b.bid_number} — {b.title.slice(0, 25)}...</option>
                   ))}
                 </select>
               </div>
@@ -107,11 +109,11 @@ export const VendorComparisonPage: React.FC = () => {
                 <ShieldAlert className="w-4 h-4 text-rose-600" />
                 <span>Critical Mandatory Failures Highlights</span>
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                 {comparisonData.vendors.map((v: any) => (
                   <div
                     key={v.vendor_id}
-                    className={`p-5 rounded-3xl border space-y-2 shadow-xs ${
+                    className={`p-4 sm:p-5 rounded-2xl sm:rounded-3xl border space-y-2 shadow-xs ${
                       v.mandatory_failures && v.mandatory_failures.length > 0
                         ? 'bg-rose-50 border-rose-200 text-rose-900'
                         : v.review_required_count > 0
@@ -119,9 +121,9 @@ export const VendorComparisonPage: React.FC = () => {
                         : 'bg-emerald-50 border-emerald-200 text-emerald-900'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-xs text-slate-900">{v.company_name}</span>
-                      <span className="font-mono text-sm font-extrabold">{v.compliance_score}%</span>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-extrabold text-xs text-slate-900 truncate">{v.company_name}</span>
+                      <span className="font-mono text-sm font-extrabold shrink-0">{v.compliance_score}%</span>
                     </div>
 
                     {v.mandatory_failures && v.mandatory_failures.length > 0 ? (
@@ -150,16 +152,16 @@ export const VendorComparisonPage: React.FC = () => {
             </div>
           )}
 
-          <div className="apple-card p-4 rounded-2xl flex items-center justify-between flex-wrap gap-4 text-xs font-medium">
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-slate-500" />
-              <span className="font-bold text-slate-700">Filter Category:</span>
-              <div className="flex items-center gap-1.5 overflow-x-auto">
+          <div className="apple-card p-3 sm:p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-medium">
+            <div className="flex items-center gap-2 w-full sm:w-auto overflow-hidden">
+              <Filter className="w-4 h-4 text-slate-500 shrink-0" />
+              <span className="font-bold text-slate-700 shrink-0">Category:</span>
+              <div className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap pb-1 sm:pb-0 scrollbar-none w-full">
                 {['ALL', 'Technical', 'Financial', 'Eligibility', 'Certification', 'Warranty'].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setFilterCategory(cat)}
-                    className={`px-3 py-1 rounded-xl transition-all ${
+                    className={`px-2.5 sm:px-3 py-1 rounded-xl transition-all text-[11px] sm:text-xs shrink-0 ${
                       filterCategory === cat
                         ? 'bg-cyan-600 text-white font-bold shadow-xs'
                         : 'bg-slate-100 text-slate-600 hover:text-slate-900'
@@ -171,23 +173,23 @@ export const VendorComparisonPage: React.FC = () => {
               </div>
             </div>
 
-            <span className="text-slate-500 font-mono text-[11px] font-semibold">
-              Showing {filteredRequirements.length} requirements across {comparisonData?.vendors?.length || 0} vendors
+            <span className="text-slate-500 font-mono text-[10px] sm:text-[11px] font-semibold shrink-0">
+              {filteredRequirements.length} requirements across {comparisonData?.vendors?.length || 0} vendors
             </span>
           </div>
 
           {comparisonData && (
-            <div className="apple-card p-7 rounded-3xl space-y-4">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
+            <div className="apple-card p-3 sm:p-6 rounded-2xl sm:rounded-3xl space-y-4">
+              <div className="overflow-x-auto w-full max-w-full block">
+                <table className="w-full text-left text-xs border-collapse min-w-[680px]">
                   <thead>
                     <tr className="bg-slate-100/80 text-slate-700 border-b border-slate-200 uppercase text-[10px] tracking-wider font-bold">
                       <th className="p-3 w-64">Requirement Clause</th>
                       <th className="p-3 w-24">Cat</th>
                       {comparisonData.vendors.map((v: any) => (
-                        <th key={v.vendor_id} className="p-3 min-w-[220px] text-center border-l border-slate-200">
+                        <th key={v.vendor_id} className="p-3 min-w-[200px] text-center border-l border-slate-200">
                           <div className="space-y-1">
-                            <span className="font-bold text-slate-900 block">{v.company_name}</span>
+                            <span className="font-bold text-slate-900 block truncate">{v.company_name}</span>
                             <span className="font-mono text-emerald-700 text-xs font-bold block">Score: {v.compliance_score}%</span>
                             <button
                               onClick={() => setSelectedVendorForRadar(v.vendor_id)}
@@ -205,9 +207,13 @@ export const VendorComparisonPage: React.FC = () => {
                     {filteredRequirements.map((req: any) => (
                       <tr key={req.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="p-3 font-bold text-slate-900">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-emerald-700 text-[11px]">{req.requirement_id}:</span>
-                            <span className="line-clamp-2">{req.requirement}</span>
+                          <div className="space-y-1">
+                            <span className="font-mono text-emerald-700 text-[10px] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 inline-block">
+                              {req.requirement_id}
+                            </span>
+                            <p className="text-xs text-slate-800 font-semibold leading-snug break-words">
+                              {req.requirement}
+                            </p>
                           </div>
                         </td>
                         <td className="p-3 text-slate-500 font-mono text-[11px] font-semibold">{req.category}</td>
@@ -224,13 +230,13 @@ export const VendorComparisonPage: React.FC = () => {
 
                           return (
                             <td key={v.vendor_id} className="p-3 border-l border-slate-200 text-center">
-                              <div className="space-y-1.5 flex flex-col items-center">
+                              <div className="space-y-1.5 flex flex-col items-center max-w-[200px] mx-auto">
                                 <StatusBadge status={statusObj.status} />
-                                <p className="text-[10px] text-slate-600 font-medium leading-tight max-w-[200px] line-clamp-2">
+                                <p className="text-[10px] text-slate-600 font-medium leading-tight line-clamp-2 break-words">
                                   {statusObj.reasoning}
                                 </p>
                                 {statusObj.doc && (
-                                  <span className="text-[9px] font-mono text-sky-700 font-bold">
+                                  <span className="text-[9px] font-mono text-sky-700 font-bold break-all">
                                     {statusObj.doc} p.{statusObj.page}
                                   </span>
                                 )}
@@ -256,6 +262,7 @@ export const VendorComparisonPage: React.FC = () => {
               </div>
             </div>
           )}
+
 
           <HumanOverrideModal
             result={selectedResultForOverride}
