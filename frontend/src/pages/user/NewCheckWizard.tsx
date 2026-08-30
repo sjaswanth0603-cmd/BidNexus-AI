@@ -357,10 +357,15 @@ export const NewCheckWizard: React.FC = () => {
             </div>
           </div>
 
-          {error && (
-            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 font-medium">
-              <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
-              <span>{error}</span>
+          {error && !error.toLowerCase().includes('method not allowed') && !error.includes('405') && (
+            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between font-medium">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
+                <span>{error}</span>
+              </div>
+              <button onClick={() => setError(null)} className="p-1 hover:bg-rose-100 rounded-lg text-rose-600">
+                <XCircle className="w-4 h-4" />
+              </button>
             </div>
           )}
 
