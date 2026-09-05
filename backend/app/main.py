@@ -11,6 +11,8 @@ from app.api import auth, bids, vendors, compliance, reviews, reports, assistant
 
 logger = logging.getLogger("bidnexus")
 
+import threading
+
 def _background_seed():
     try:
         seed_database()
@@ -20,11 +22,10 @@ def _background_seed():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Auto-seed MongoDB Atlas in non-blocking background thread so port binds instantly
+    # Auto-seed MongoDB Atlas in non-blocking daemon thread so port binds instantly
     try:
-        import asyncio
-        loop = asyncio.get_running_loop()
-        loop.run_in_executor(None, _background_seed)
+        t = threading.Thread(target=_background_seed, daemon=True)
+        t.start()
     except Exception as e:
         logger.warning(f"Background seed dispatch: {e}")
     yield

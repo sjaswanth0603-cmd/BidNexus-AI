@@ -7,7 +7,7 @@ services:
     plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    startCommand: python main.py
     envVars:
       - key: PROJECT_NAME
         value: AI-Powered Integrated Bid Compliance Verification Platform
@@ -21,8 +21,6 @@ services:
         value: gemini
       - key: PYTHONUNBUFFERED
         value: "1"
-      - key: PORT
-        value: "10000"
       - key: MONGODB_URL
         value: mongodb+srv://jaswanth:jaswanth@cluster0.okhihr5.mongodb.net/?appName=Cluster0
       - key: GEMINI_API_KEY
