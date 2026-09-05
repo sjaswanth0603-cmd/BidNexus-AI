@@ -20,7 +20,7 @@ services:
       - key: LLM_PROVIDER
         value: gemini
       - key: MONGODB_URL
-        sync: false
+        value: mongodb+srv://jaswanth:jaswanth@cluster0.okhihr5.mongodb.net/?appName=Cluster0
       - key: GEMINI_API_KEY
         sync: false
       - key: CLOUDINARY_CLOUD_NAME

@@ -13,7 +13,7 @@ class Settings(BaseSettings):
         os.getenv("MONGODB_URI") or
         os.getenv("MONGO_URL") or
         os.getenv("MONGO_URI") or
-        ""
+        "mongodb+srv://jaswanth:jaswanth@cluster0.okhihr5.mongodb.net/?appName=Cluster0"
     )
     MONGODB_DB_NAME: str = os.getenv("MONGODB_DB_NAME", "bidnexus_ai")
     
