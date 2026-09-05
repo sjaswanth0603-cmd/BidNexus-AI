@@ -6,6 +6,9 @@ const getApiBase = () => {
     const base = import.meta.env.VITE_API_URL.replace(/\/$/, '');
     return base.endsWith('/api/v1') ? base : `${base}/api/v1`;
   }
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'https://bidnexus-ai-backend.onrender.com/api/v1';
+  }
   return '/api/v1';
 };
 

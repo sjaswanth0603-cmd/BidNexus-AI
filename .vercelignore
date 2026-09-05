@@ -21,10 +21,6 @@ __pycache__
 .pytest_cache
 *.log
 
-# Frontend source (only frontend/dist is needed for static serving)
-frontend/src
-frontend/public
-
 # Local test uploads and binaries
 backend/uploads
 backend/uploads/**

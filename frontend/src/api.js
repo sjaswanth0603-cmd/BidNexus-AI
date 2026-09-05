@@ -1,9 +1,16 @@
 import axios from 'axios';
 
-// REST API Base URL (Configurable via VITE_API_URL)
-export const API_BASE_URL = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api` 
-  : '/api';
+const getJavaApiBase = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`;
+  }
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'https://bidnexus-ai-backend.onrender.com/api';
+  }
+  return '/api';
+};
+
+export const API_BASE_URL = getJavaApiBase();
 
 const api = axios.create({
   baseURL: API_BASE_URL,

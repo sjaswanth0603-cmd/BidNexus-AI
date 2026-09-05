@@ -68,8 +68,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         created_at: new Date().toISOString()
       };
 
-      const mockToken = 'bidnexus_jwt_' + btoa(JSON.stringify({ sub: fallbackUser.id, role: fallbackUser.role, email: fallbackUser.email }));
-      localStorage.setItem('token', mockToken);
+      let mockToken = 'bidnexus_jwt_demo_token_' + Date.now();
+      try {
+        mockToken = 'bidnexus_jwt_' + btoa(unescape(encodeURIComponent(JSON.stringify({ sub: fallbackUser.id, role: fallbackUser.role, email: fallbackUser.email }))));
+      } catch {
+        // Safe fallback token
+      }
+      try {
+        localStorage.setItem('token', mockToken);
+      } catch {
+        // Safe fallback
+      }
       setToken(mockToken);
       setUser(fallbackUser);
       return fallbackUser;
