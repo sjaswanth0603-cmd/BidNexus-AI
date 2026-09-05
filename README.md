@@ -1,4 +1,4 @@
-﻿# 🛡️ BidNexusAI — AI-Powered GeM & eGP Procurement Scrutiny Platform
+# 🛡️ BidNexusAI — AI-Powered GeM & eGP Procurement Scrutiny Platform
 
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Portal-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://bidnexus.vercel.app)
 [![Render Backend](https://img.shields.io/badge/Render-FastAPI%20Backend-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://bidnexus-ai-backend.onrender.com/api/v1/docs)
@@ -176,16 +176,4 @@ BidNexus-AI/
 └── .vercelignore             # Optimized deployment exclusions
 ```
 
----
 
-## 🏆 SIH Hackathon Evaluation Guide
-
-1. **Sign In**: Visit [https://bidnexus.vercel.app](https://bidnexus.vercel.app) and click **Demo Bidder Login** or **Demo Evaluator Login**.
-2. **Explore Tender Notices**: View active GeM and AP eGP procurement tenders with pre-extracted requirement rules.
-3. **Upload Bidder Evidence**: Upload vendor proposals, datasheets, or audited balance sheets to run the AI compliance scrutiny pipeline.
-4. **Inspect Audit Trails**: Navigate to Evaluator Console to review clause-by-clause confidence scores, page-level citations, and override flags.
-
----
-
-## 📄 License
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
