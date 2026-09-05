@@ -78,7 +78,7 @@ def seed_database(db=None):
                 "id": u_bidder_id,
                 "email": "user@example.com",
                 "password_hash": hashed_pw,
-                "full_name": "K. Satyanarayana Raju",
+                "full_name": "S. Jaswanth Naidu",
                 "organization": "TechCorp Solutions AP Pvt Ltd",
                 "role": "user",
                 "phone": "+91 98480 12345",

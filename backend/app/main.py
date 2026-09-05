@@ -11,13 +11,22 @@ from app.api import auth, bids, vendors, compliance, reviews, reports, assistant
 
 logger = logging.getLogger("bidnexus")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Auto-seed MongoDB Atlas on serverless startup if empty
+def _background_seed():
     try:
         seed_database()
+        logger.info("MongoDB background verification and seed completed successfully.")
     except Exception as e:
-        logger.warning(f"Startup seed skipped or deferred: {e}")
+        logger.warning(f"Background seed note: {e}")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Auto-seed MongoDB Atlas in non-blocking background thread so port binds instantly
+    try:
+        import asyncio
+        loop = asyncio.get_running_loop()
+        loop.run_in_executor(None, _background_seed)
+    except Exception as e:
+        logger.warning(f"Background seed dispatch: {e}")
     yield
 
 app = FastAPI(
@@ -64,12 +73,6 @@ app.include_router(reports.router, prefix="/api")
 app.include_router(assistant.router, prefix="/api")
 app.include_router(audit.router, prefix="/api")
 app.include_router(mongodb.router, prefix="/api")
-
-# Run automatic seeding on startup
-try:
-    seed_database()
-except Exception as e:
-    logger.warning(f"Initial seed notice: {e}")
 
 @app.get("/")
 @app.get("/health")
